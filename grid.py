@@ -82,10 +82,10 @@ class Grid():
         if self.grid[coor[0]][coor[1]].piece == 0 :
             self.grid[coor[0]][coor[1]].piece = player
         else: 
-            raise Exception("Attempted to make an illegal move!")
+            raise Exception("Player " + player + " attempted to make an illegal move!")
 
 
-    # Returns a compact state representation 
+    # Returns the state representation. if compact == True then a string with 0 for empty, 1 and 2 for player 1 and 2 will be returned
     def get_state(self, compact = True):
         
         if compact:
@@ -122,6 +122,8 @@ class Grid():
         
         
     # Depth-first search from an opposing side to another
+    # Returns True if the state is terminal, as well as the player number who won the game
+    # TODO return also the winning route?
     def is_terminal(self):
 
         def iterate(node,visited,player):
@@ -146,32 +148,36 @@ class Grid():
                     # Else, iterate further
                     if iterate(n, visited, player):
                         return True
+                     
                                
         # Checking for each possible player
         for player in range(1,3):
             
+            # Loop through the nodes that are in the starting border (e.g. max number of nodes in the starting/winning border == size of the board)
             for i in range(self.size):
                 
+                # Only looping through the nodes that have the pieces belonging to the current player                
                 if player == 1:
                     if self.grid[0][i].piece == player and iterate(self.grid[0][i], [], player):
-                        return True
+                        return True, 1
                 
                 else:
                     if self.grid[i][0].piece == player and iterate(self.grid[i][0], [], player):
-                        return True
+                        return True, 2
                     
                     
         # If none of the iterations reached the other border, return False
         return False
-        
+    
     
     # TODO
+    # The reward should depend on the player playing ?
     def get_reward(self):
-        
             return 0
     
     
-    # Prints out a pretty looking grid
+    # Prints out a pretty looking 
+    # TODO show the winning route ?
     def print_grid(self):
         
         # The new graph for printing
@@ -211,7 +217,6 @@ class Grid():
 
 
 # Plays a game randmoly picking available actions
-# This is for fun
 def random_play(size = 6):
     play = Grid(size)
     
@@ -224,7 +229,9 @@ def random_play(size = 6):
         print("Player " + str(player) + " places a piece in " + str(temp))
         player = 2 if player == 1 else 1
         
-        if play.is_terminal():
+        results = play.is_terminal()
+        if type(results) != bool and results[0]:
+            print("Player " + str(results[1]) + " won the game!")
             break
         
     del play
@@ -233,11 +240,7 @@ def random_play(size = 6):
 
 
 # Run the stuff
-random_play()
-
-
-
-
+#random_play()
 
 
 
