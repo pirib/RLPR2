@@ -24,6 +24,7 @@ class ANET():
     
     
     # Creates the network with specified parameters 
+    # NOTE softmax activation function should be used for the output
     def create_network(self, layers, optimizer):
         
         # Create the model
@@ -45,9 +46,24 @@ class ANET():
         # Compile the model
         self.model.compile(optimizer = optimizer)
         
+        
     # Train the network
     def fit(self):
         pass
+    
+    
+    # Returns the probability distribution over the possible moves
+    # the first value is for 0,0; then 0,1 ; 0,2 . etc. e.g. col/row in accessing the gridp[col][row]
+    def pd(self):
+        pass
+    
+    
+    # Returns the move that agent decides to make
+    # pd - probability distruvtion
+    # grate - e-greedy rate 
+    def policy(self, pd, grate):
+        pass
+    
     
     # Normalizes the output of the NN
     def normalize(self, grid, output_distribution):
@@ -63,7 +79,9 @@ class ANET():
         pass
     
     
-    
+    # Saves the NN information to a file
+    def save_NN(self):
+        pass
     
     
     

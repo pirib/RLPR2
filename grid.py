@@ -29,12 +29,12 @@ class Grid():
     # Methods
     
     # Grid:
-    # Size is as defined in hex-board-games.pdf
-    
+    # Size is as defined in hex-board-games.pdf    
     def __init__( self, size):
         self.grid.clear()
         self.create(size)
         self.size = size
+        
         
     # Destructor - also removes all the nodes.
     def __del__(self): 
@@ -217,30 +217,28 @@ class Grid():
 
 
 # Plays a game randmoly picking available actions
-def random_play(size = 6):
-    play = Grid(size)
+
+play = Grid(4)
+
+player = 1    
+while ( True ):
+    temp = random.choice(  play.get_available_actions()  )
+    play.make_move( temp ,  player )
+    #time.sleep(0.5)
+    play.print_grid()
+    print("Player " + str(player) + " places a piece in " + str(temp))
+    player = 2 if player == 1 else 1
     
-    player = 1    
-    while ( True ):
-        temp = random.choice(  play.get_available_actions()  )
-        play.make_move( temp ,  player )
-        #time.sleep(0.5)
-        play.print_grid()
-        print("Player " + str(player) + " places a piece in " + str(temp))
-        player = 2 if player == 1 else 1
-        
-        results = play.is_terminal()
-        if type(results) != bool and results[0]:
-            print("Player " + str(results[1]) + " won the game!")
-            break
-        
-    del play
+    results = play.is_terminal()
+    if type(results) != bool and results[0]:
+        print("Player " + str(results[1]) + " won the game!")
+        break
+    
 
 
 
 
-# Run the stuff
-#random_play()
+
 
 
 
