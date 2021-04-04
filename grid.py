@@ -75,6 +75,16 @@ class Grid():
                         except:
                             pass                 
         
+        
+    # Sets the values of the grid based on the bistring state supplied
+    def set_from_state(self, state):
+        
+        i = 0
+        for row in self.grid:
+            for node in row:
+                node.insert_piece(state[i])
+                i += 1
+        
                 
     # Places a piece into the an empty spot as specified by coor tuple and player parameters
     # This function moves the grid into a new state
@@ -217,8 +227,8 @@ class Grid():
     
 
 
-# Plays a game randmoly picking available actions
-
+# Plays a game randomly picking available actions
+"""
 play = Grid(4)
 
 player = 1    
@@ -235,7 +245,7 @@ while ( True ):
         print("Player " + str(results[1]) + " won the game!")
         break
     
-
+"""
 
 
 

@@ -20,6 +20,6 @@ class Node:
         self.neighbours = neighbours
         
     # Puts in a pin, player 1 is white, 2 is black
-    def insert_pin(self, player):
-        self.empty = player
+    def insert_piece(self, player):
+        self.piece = int(player)
     
