@@ -122,8 +122,9 @@ class Grid():
         
         
     # Depth-first search from an opposing side to another
-    # Returns True if the state is terminal, as well as the player number who won the game
+    # Returns True if the state is terminal, as well as the player number who won the game. Alternatively returns False, 0
     # TODO return also the winning route?
+    # TODO this can be optimized, to return once a terminal route has been found
     def is_terminal(self):
 
         def iterate(node,visited,player):
@@ -166,14 +167,14 @@ class Grid():
                         return True, 2
                     
                     
-        # If none of the iterations reached the other border, return False
-        return False
+        # If none of the iterations reached the other border, return False with 0 as the winner player
+        return False, 0
     
     
     # TODO
     # The reward should depend on the player playing ?
     def get_reward(self):
-            return 0
+        return 0
     
     
     # Prints out a pretty looking 
@@ -230,7 +231,7 @@ while ( True ):
     player = 2 if player == 1 else 1
     
     results = play.is_terminal()
-    if type(results) != bool and results[0]:
+    if results[0]:
         print("Player " + str(results[1]) + " won the game!")
         break
     

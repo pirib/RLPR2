@@ -16,7 +16,7 @@ class ANET():
     
     # Constructor
     # lrate - learning rate of the NN
-    # layers - a list with number of nodes in the layers, alternating with activation functions. Activating functions accepted - "lin" - linear , "sig" - sigmoid, "tan" - tanh, "rel" - RELU
+    # layers - a list with number of nodes in the layers, alternating with activation functions. The first value is the input shape only. Activating functions accepted - "lin" - linear , "sig" - sigmoid, "tan" - tanh, "rel" - RELU
     # optimizer - the optimizer used. Following are accepted - "ADA" - Adagrad; "SGD" - Stochastic Gradient Descent; "RMS" - RMSProp; "ADAM" - Adam
     # M - after how many games the information about the network is saved into a file
     def __init__( self, lrate, layers, optimizer, M ):
@@ -34,14 +34,13 @@ class ANET():
         # TODO check what shape should be here
         self.model.add(tf.keras.layers.InputLayer(input_shape = (int(layers[0]),) ) )
 
-        # TODO if adding the input later is done before, make sure to remove it from here
         # TODO use the activation functions specified in the layers argument 
         # Adding layers with number of nodes as specified in layers argument
-        for i in range(len(layers)):
+        for i in range(len(layers[1:])):
 
             # Care only for the odd values
             if i % 2 != 0:
-                self.model.add( tf.keras.layers.Dense( units = layers[i], activation = tf.nn.relu) )
+                self.model.add( tf.keras.layers.Dense( units = layers[i+1], activation = tf.nn.relu) )
     
         # Compile the model
         self.model.compile(optimizer = optimizer)
