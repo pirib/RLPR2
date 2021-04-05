@@ -203,10 +203,20 @@ class Grid():
         return False, 0
     
     
-    # TODO
-    # The reward should depend on the player playing ?
+    # Returns the reward of the current state - 0 if not terminal, else positive for player 1 and negative for player 2
     def get_reward(self):
-        return 0
+        
+        # Check if the state is terminal or not
+        state_info = self.is_terminal()
+        
+        # If the state is not terminal, return 0 
+        if not state_info[0]:
+            return 0
+        elif state_info[1] == 1:
+            return 1
+        elif state_info[1] == 2:
+            return -1            
+
     
     
     # Prints out a pretty looking 
