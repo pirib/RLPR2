@@ -21,7 +21,7 @@ class MCTS:
     # Constructor
     # episodes - total number of training episodes to run
     # grate - greed rate in the tree selection policy
-    # num_rollouts - number of rollouts in a search 
+    # num_rollouts - number of rollouts in the simulation search 
     def __init__( self, board_size, grate, episodes, num_rollouts):
         self.board_size = board_size
         self.grate = grate
@@ -70,6 +70,7 @@ class MCTS:
     
     
     # From the chosen state node, tree policy selects an action from which the rollout simulations are ran
+    # Returns the reward and the anode that was chosen (for backup)
     def simulation(self, snode):
 
         # Execute a roullout search - returns a reward from the terminal state
@@ -101,17 +102,24 @@ class MCTS:
         # Select an action node to run simulations with
         anode = self.tree_policy(snode)
         
-        return self.rollout(anode)
+        # Calculate the average rewards from all the rollouts done
+        tr = 0
+        for r in range(self.num_rollouts):
+            tr += self.rollout(anode)
+        
+        # Return the average reward from all the rollouts and the anode that was chosen
+        return tr/self.num_rollouts, anode
     
     
     # Backpropagate the reward information down to the root
-    def backup(self, anode):
+    def backup(self, anode, reward):
         
         # Iterative backpropagation
         def bp(anode):
             
-            # Update the visit count
+            # Update the visit count and the new value for the state/action value
             anode.visits += 1
+            anode.update_value(reward)
             
             # If the anode's parent's parent is not None (e.g. we haven't reached the route yet), then continue propagating upwards
             if not anode.parent.parent:
@@ -130,10 +138,23 @@ class MCTS:
             # Pick a move randomly
             anode = random.choice(snode.actions)
                             
-        # Else, exploit, based on the values of the action
+        # Else, exploit, based on the values of the action, and the player's turn it currently is
         else:
-            anode = h.argmax(snode.actions, lambda a : a.value)
-        
+            
+            # Get the state info
+            s = snode.state
+            
+            # Count number of pieces belonging to the players
+            num_p1 = s.count("1")
+            num_p2 = s.count("2")
+            
+            if num_p1 > num_p2:
+                anode = h.argmax(snode.actions, lambda a : a.value)
+            elif num_p1 == num_p2:
+                anode = h.argmin(snode.actions, lambda a : a.value)
+            else:
+                raise Exception("Shit's fucked yo.")
+
         return anode
     
 
@@ -191,7 +212,9 @@ class anode():
         self.parent = parent
         self.action = action
 
-
+    def update_value(self, new_value):
+        tv = self.value * self.visits
+        self.value = (tv + new_value) / self.visits 
 
 
 
