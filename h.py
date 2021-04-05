@@ -17,6 +17,15 @@ def argmax(l, f = lambda e : e, *args):
             b = e
     return b
 
+# Same as argmax, but looks for smallest value
+def argmin(l, f = lambda e : e, *args):
+    b = l[0]
+    for e in l[1:]:
+        if f(e, *args) < f(b, *args):
+            b = e
+    return b
+
+
 # Let's you know if a container is empty or not - a lot easier to read 
 def is_empty(c):
     if not c:

@@ -69,10 +69,10 @@ class MCTS:
         anode.child = snode( board.get_state() , anode)
     
     
-    # Simulate
+    # From the chosen state node, tree policy selects an action from which the rollout simulations are ran
     def simulation(self, snode):
 
-        # Execute a roullout search - returns a reward from the simulation
+        # Execute a roullout search - returns a reward from the terminal state
         # anode - the anode from which the rollouts will be made
         # policy - the policy that the rollout should use for simulations
         def rollout(self, anode, policy = "r"):
@@ -104,9 +104,22 @@ class MCTS:
         return self.rollout(anode)
     
     
-    def backup(self):
-        pass
-    
+    # Backpropagate the reward information down to the root
+    def backup(self, anode):
+        
+        # Iterative backpropagation
+        def bp(anode):
+            
+            # Update the visit count
+            anode.visits += 1
+            
+            # If the anode's parent's parent is not None (e.g. we haven't reached the route yet), then continue propagating upwards
+            if not anode.parent.parent:
+                # Backpropagate to the parents parents
+                bp(anode.parent.parent)
+        
+        # Call the function iteratively
+        bp(anode)
         
     
     # The tree policy - e-greedy policy, expects a state node, returns an action node
@@ -163,6 +176,9 @@ class anode():
     
     # The value of the action. Together with parent this consitutes an state-action pair
     value = 0
+    
+    # Number of time this anode has been visited
+    visits = 0
     
     # A tuple indicating the move
     action = None
