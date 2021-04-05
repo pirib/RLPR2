@@ -28,12 +28,13 @@ class MCTS:
         self.episodes = episodes
         self.num_rollouts = num_rollouts
         self.root = snode("".join("0" for s in range(board_size**2)) , None )
+        print(snode.actions)
         
         
     # The 4 horseman of MCTS
     
-    # Traverse the tree and pick the node that should be expaned further (e.g. pick a state/action pair)
-    # e-greedy policy is used
+    # e-greedy tree traversal - picks the node that should be expaned further (e.g. pick a state/action pair). 
+    # Returns an action node that is chosen for expansion
     def selection(self):
     
         # Iterates through the tree, starting at the root, with action leading to it
@@ -52,11 +53,12 @@ class MCTS:
             else:
                 return iterate(anode.child)
 
-        # Recrusively calls, until 
+        # Recrusively calls itself, until the action node that is going to be expanded, is returned
         return iterate(self.root)
     
     
     # Expands the given action node, by adding a child state node to the action node, and expanding to the possible actions
+    # Returns snode, the generated child of the anode
     def expansion(self, anode):
         
         # Make a board from the anode's parent state
@@ -68,6 +70,7 @@ class MCTS:
         # Create a state node and assign it as a child of the anode
         anode.child = snode( board.get_state() , anode)
     
+        return anode.child
     
     # From the chosen state node, tree policy selects an action from which the rollout simulations are ran
     # Returns the reward and the anode that was chosen (for backup)
@@ -76,7 +79,7 @@ class MCTS:
         # Execute a roullout search - returns a reward from the terminal state
         # anode - the anode from which the rollouts will be made
         # policy - the policy that the rollout should use for simulations
-        def rollout(self, anode, policy = "r"):
+        def rollout(anode, policy = "r"):
             
             # Make the board from the anode's parent's state
             board = grid.create_board(anode.parent.state)
@@ -105,7 +108,7 @@ class MCTS:
         # Calculate the average rewards from all the rollouts done
         tr = 0
         for r in range(self.num_rollouts):
-            tr += self.rollout(anode)
+            tr += rollout(anode)
         
         # Return the average reward from all the rollouts and the anode that was chosen
         return tr/self.num_rollouts, anode
@@ -122,7 +125,7 @@ class MCTS:
             anode.update_value(reward)
             
             # If the anode's parent's parent is not None (e.g. we haven't reached the route yet), then continue propagating upwards
-            if not anode.parent.parent:
+            if anode.parent.parent:
                 # Backpropagate to the parents parents
                 bp(anode.parent.parent)
         
@@ -143,12 +146,13 @@ class MCTS:
             
             # Get the state info
             s = snode.state
-            
+                        
             # Count number of pieces belonging to the players
             num_p1 = s.count("1")
             num_p2 = s.count("2")
             
-            if num_p1 > num_p2:
+
+            if num_p1 > num_p2 or ( num_p1 == num_p2 and num_p1 == 0):
                 anode = h.argmax(snode.actions, lambda a : a.value)
             elif num_p1 == num_p2:
                 anode = h.argmin(snode.actions, lambda a : a.value)
@@ -158,6 +162,20 @@ class MCTS:
         return anode
     
 
+    # Run the MCTS 
+    def run(self):
+        
+        # Run on repeat for number of episodes
+        for e in range(self.episodes):
+            
+            anode = self.selection()
+            snode = self.expansion(anode)
+            reward, sel_anode = self.simulation(snode)
+            print(sel_anode)
+            self.backup(sel_anode, reward)
+            
+
+# Node classes =============================================================================
         
 # State node
 class snode():
@@ -175,9 +193,9 @@ class snode():
     def __init__(self, state, parent):
         self.state = state
         self.parent = parent
-        self.gen_actions()
+        self.gen_actions(self)
         
-    # Generate actions, e.g. child nodes
+    # Generate actions, e.g. child action nodes
     def gen_actions(self, parent):
         
         # Make a board based on the parent's state

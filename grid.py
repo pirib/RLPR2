@@ -53,7 +53,7 @@ class Grid():
             # Create a new empty row
             self.grid.append([])
                 
-            for c in range (size):
+            for c in range(size):
                 # Make a new node and shove into the right row. The node is then accessible at grid[r][c].
                 self.grid[r].append( N.Node(r,c,size) )
 
@@ -97,7 +97,7 @@ class Grid():
         num_p1 = s.count("1")
         num_p2 = s.count("2")
         
-        if num_p1 > num_p2:
+        if num_p1 > num_p2 or (num_p1 == num_p2 and num_p1 == 0):
             return 1
         elif num_p1 == num_p2:
             return 2
@@ -266,7 +266,7 @@ class Grid():
 def create_board(state):
 
     # Make a grid
-    board = Grid( len(state)**0.5 )
+    board = Grid( int(len(state)**0.5) )
     
     # Set it to the state that we are currently in
     board.set_from_state(state)
