@@ -38,6 +38,9 @@ class MCTS:
     
         # Iterates through the tree, starting at the root, with action leading to it
         def iterate(root):
+            
+            # 1. Select an action
+            
             action = None
                        
             # With grate probability explore
@@ -50,7 +53,7 @@ class MCTS:
                 action = h.argmax(root.actions, lambda a : a.value)
                 
             
-            # After the action has been selected
+            # 2. See what the action selection led us to
                 
             # If the action has no child we are done, this is our new leaf node, the expansion happens next
             if not action.child:
@@ -79,7 +82,7 @@ class MCTS:
         # Create a state node and assign it as a child of the anode
         anode.child = snode( tb.get_state() , anode)
     
-    
+    # Simulate
     def simulation(self):
         pass
     
@@ -113,7 +116,6 @@ class MCTS:
         
         
 # State node
-# TODO gen_actions needs to be done next
 class snode():
         
     # The action node from which this state is reached
@@ -132,8 +134,15 @@ class snode():
         self.gen_actions()
         
     # Generate actions, e.g. child nodes
-    def gen_actions(self):
-        pass
+    def gen_actions(self, parent):
+        
+        tb = grid.Grid( len(self.state)**0.5 )
+        
+        tb.set_from_state(self.state)
+        
+        for a in tb.get_available_actions():
+            self.actions.append( anode( self, a) )
+
    
     
 # Action node
@@ -152,8 +161,9 @@ class anode():
     child = None
 
     # Constructor
-    def __init__(self):
-        pass
+    def __init__(self, parent, action):
+        self.parent = parent
+        self.action = action
 
 
 
