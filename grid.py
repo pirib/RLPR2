@@ -11,6 +11,7 @@ import node as N
 # For general funciton
 import random
 import time
+from copy import deepcopy
 
 # For printing pretty stuff
 import networkx as nx
@@ -85,10 +86,31 @@ class Grid():
                 node.insert_piece(state[i])
                 i += 1
         
+        
+    # Returns the current player - based on the number of pieces on the board
+    def get_player(self):
+        
+        # Get the state info
+        s = self.get_state()
+        
+        # Count number of pieces belonging to the players
+        num_p1 = s.count("1")
+        num_p2 = s.count("2")
+        
+        if num_p1 > num_p2:
+            return 1
+        elif num_p1 == num_p2:
+            return 2
+        else:
+            raise Exception("Anomalous board state - number of pieces for player 1 is less that number of pieces for player 2!")
+
                 
     # Places a piece into the an empty spot as specified by coor tuple and player parameters
     # This function moves the grid into a new state
-    def make_move(self, coor, player):
+    def make_move(self, coor):
+        
+        player = self.get_player()
+        
         if self.grid[coor[0]][coor[1]].piece == 0 :
             self.grid[coor[0]][coor[1]].piece = player
         else: 
@@ -234,7 +256,7 @@ play = Grid(4)
 player = 1    
 while ( True ):
     temp = random.choice(  play.get_available_actions()  )
-    play.make_move( temp ,  player )
+    play.make_move( temp )
     #time.sleep(0.5)
     play.print_grid()
     print("Player " + str(player) + " places a piece in " + str(temp))

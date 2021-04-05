@@ -5,9 +5,11 @@ Created on Thu Apr  1 15:20:21 2021
 @author: babay
 """
 
+# In-house stuff
 import grid
 import h
 
+# For general funciton
 import copy
 import random
 
@@ -47,6 +49,9 @@ class MCTS:
             else:
                 action = h.argmax(root.actions, lambda a : a.value)
                 
+            
+            # After the action has been selected
+                
             # If the action has no child we are done, this is our new leaf node, the expansion happens next
             if not action.child:
                 return action
@@ -59,15 +64,25 @@ class MCTS:
         return iterate(self.root)
     
     
-    # Expands the given action node, by adding a 
+    # Expands the given action node, by adding a child state node to the action node, and expanding to the possible actions
     def expansion(self, anode):
         
+        # TODO maybe change this, to remove the domain dependency
+        tb = grid.Grid( len(anode.parent.state)**0.5 )
+        
+        # Set the state based on the parent's state
+        tb.set_from_state(anode.parent.state)
+        
+        # Make a move based on the anode
+        tb.make_move(anode.action)
+        
         # Create a state node and assign it as a child of the anode
-        anode.child = snode( "" , anode)
+        anode.child = snode( tb.get_state() , anode)
     
     
     def simulation(self):
         pass
+    
     
     def backup(self):
         pass
@@ -79,18 +94,18 @@ class MCTS:
     def rollout(self, board, policy = "r"):
         
         # Make a copy of the board for the rollout
-        state = copy.deepcopy(board)
+        b = copy.deepcopy(board)
         
         # Random policy, e.g. moves are selected randomly
         if policy == "r":
             
             # Make moves until the game is in terminal state
-            while not state.is_terminal()[0]:
-                move = random.choice(state.get_available_actions())
-                state.make_move(move , 1)
+            while not b.is_terminal()[0]:
+                move = random.choice(b.get_available_actions())
+                b.make_move(move)
                 
             # Return the reward of the terminal state
-            return state.get_reward()
+            return b.get_reward()
         
         elif policy == "n":
             return
