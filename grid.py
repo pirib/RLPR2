@@ -246,7 +246,23 @@ class Grid():
 
 
     # End of the Class =============================================================
+
+
+
+# Helpers
+
+# A shortcut for quickly creating a board, and setting it to a particular state
+# TODO change the name
+def create_board(state):
+
+    # Make a grid
+    board = Grid( len(state)**0.5 )
     
+    # Set it to the state that we are currently in
+    board.set_from_state(state)
+    
+    return board
+
 
 
 # Plays a game randomly picking available actions
