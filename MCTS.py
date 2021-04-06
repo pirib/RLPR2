@@ -22,13 +22,27 @@ class MCTS:
     # episodes - total number of training episodes to run
     # grate - greed rate in the tree selection policy
     # num_rollouts - number of rollouts in the simulation search 
-    def __init__( self, board_size, grate, episodes, num_rollouts):
+    def __init__( self, board_size, episodes, num_rollouts, grate, discount = 0.9):
         self.board_size = board_size
-        self.grate = grate
         self.episodes = episodes
         self.num_rollouts = num_rollouts
+        self.grate = grate
+        self.discount = discount
+
+        # Set the root node 
         self.root = snode("".join("0" for s in range(board_size**2)) , None )
-        print(snode.actions)
+        
+        
+    # Run the MCTS 
+    def run(self):
+        
+        # Run on repeat for number of episodes
+        for e in range(self.episodes):
+            
+            anode = self.selection()
+            snode = self.expansion(anode)
+            reward, sel_anode = self.simulation(snode)
+            self.backup(sel_anode, reward)        
         
         
     # The 4 horseman of MCTS
@@ -46,6 +60,9 @@ class MCTS:
             # 2. See what the action selection led us to
                 
             # If the action has no child we are done, this is our new leaf node, the expansion happens next
+            if not anode:
+                return snode.parent
+            
             if not anode.child:
                 return anode
 
@@ -70,7 +87,9 @@ class MCTS:
         # Create a state node and assign it as a child of the anode
         anode.child = snode( board.get_state() , anode)
     
+        # Return it
         return anode.child
+    
     
     # From the chosen state node, tree policy selects an action from which the rollout simulations are ran
     # Returns the reward and the anode that was chosen (for backup)
@@ -101,10 +120,16 @@ class MCTS:
             elif policy == "n":
                 raise Exception("Policy other than random rollout have not been done yet")
 
-
+        
         # Select an action node to run simulations with
         anode = self.tree_policy(snode)
         
+        # If anode is None
+        if not anode:
+            # Then the board is in terminal state, we just need to return its reward (there is no need for Rollouts)
+            board = grid.create_board(snode.state)
+            return board.get_reward(), snode.parent
+                
         # Calculate the average rewards from all the rollouts done
         tr = 0
         for r in range(self.num_rollouts):
@@ -124,8 +149,9 @@ class MCTS:
             anode.visits += 1
             anode.update_value(reward)
             
-            # If the anode's parent's parent is not None (e.g. we haven't reached the route yet), then continue propagating upwards
-            if anode.parent.parent:
+            # If the anode's parent's parent is not None 
+            # (e.g. we haven't reached the root yet), then continue propagating upwards
+            if not anode.parent.parent == None:
                 # Backpropagate to the parents parents
                 bp(anode.parent.parent)
         
@@ -135,6 +161,10 @@ class MCTS:
     
     # The tree policy - e-greedy policy, expects a state node, returns an action node
     def tree_policy(self, snode):
+
+        # If the board is already in the terminal state, e.g. no actions are available, return None
+        if h.is_empty(snode.actions):
+            return None
                            
         # With grate probability explore
         if random.random() <= self.grate:
@@ -151,7 +181,6 @@ class MCTS:
             num_p1 = s.count("1")
             num_p2 = s.count("2")
             
-
             if num_p1 > num_p2 or ( num_p1 == num_p2 and num_p1 == 0):
                 anode = h.argmax(snode.actions, lambda a : a.value)
             elif num_p1 == num_p2:
@@ -162,38 +191,23 @@ class MCTS:
         return anode
     
 
-    # Run the MCTS 
-    def run(self):
-        
-        # Run on repeat for number of episodes
-        for e in range(self.episodes):
-            
-            anode = self.selection()
-            snode = self.expansion(anode)
-            reward, sel_anode = self.simulation(snode)
-            print(sel_anode)
-            self.backup(sel_anode, reward)
-            
-
 # Node classes =============================================================================
         
 # State node
 class snode():
         
-    # The action node from which this state is reached
-    parent = None
-    
-    # State of the board at the current node - given as a string of 0,1,2, same as compact state representation.
-    state = ""
-    
-    # A list of action nodes - e.g. all the child anodes from this state
-    actions = []
     
     # Constructor
     def __init__(self, state, parent):
+        # State of the board at the current node - given as a string of 0,1,2, same as compact state representation.
         self.state = state
+        # The action node from which this state is reached
         self.parent = parent
+        # A list of action nodes - e.g. all the child anodes from this state
+        self.actions = []
+        # Generate the actions that are avvailable from this state node
         self.gen_actions(self)
+        
         
     # Generate actions, e.g. child action nodes
     def gen_actions(self, parent):
@@ -210,25 +224,20 @@ class snode():
 # Action node
 class anode():
     
-    # The state node from which this action is taken
-    parent = None
-    
-    # The value of the action. Together with parent this consitutes an state-action pair
-    value = 0
-    
-    # Number of time this anode has been visited
-    visits = 0
-    
-    # A tuple indicating the move
-    action = None
-    
-    # The state node this action leads to
-    child = None
 
     # Constructor
     def __init__(self, parent, action):
+        # The state node from which this action is taken
         self.parent = parent
+        # A tuple indicating the move
         self.action = action
+        # The value of the action. Together with parent this consitutes an state-action pair
+        self.value = 0
+        # Number of time this anode has been visited
+        self.visits = 0
+        # The state node this action leads to
+        self.child = None
+
 
     def update_value(self, new_value):
         tv = self.value * self.visits
