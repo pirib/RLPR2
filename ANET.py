@@ -77,8 +77,8 @@ class ANET():
     
     
     # Saves the NN information to a file
-    def save_NN(self):
-        pass
+    def save_NN(self, e):
+        self.model.save_weights('./models/m' + str(e))
     
     
     
