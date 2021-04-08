@@ -6,7 +6,8 @@ Created on Fri Apr  2 13:14:05 2021
 """
 
 import tensorflow as tf
-
+import numpy as np
+import random
 
 class ANET():
     
@@ -57,25 +58,22 @@ class ANET():
     
     # Returns the move that agent decides to make
     # state - current state of the board
-    # grate - e-greedy rate 
-    def policy(self, state, grate):
-        pass
+    def policy(self, state):
+        
+        # Get the numpy array of distributions
+        pd = self.model(state)        
     
-    
-    # Normalizes the output of the NN
-    def normalize(self, grid, output_distribution):
+        # Not all the moves in there are possible, need to normalize the output
+        # Set all pd values where state is not zero to zero (e.g. where the move is not possible)
+        for oi, si in zip(range(len(pd)), state):
+            if si != "0":    pd[oi] = 0    
+     
+        # Now, normalize the pd   
+        pd = pd / sum(pd)
 
-        state_compact = grid.get_state(compact = True)
         
-        # q - number of spots in the state that are taken. e.g. total spots minus free spots
-        q = grid.size - state_compact.count('0')
         
-        for output, position in zip(output_distribution, state_compact):
-            pass
-        
-        pass
-    
-    
+
     # Saves the NN information to a file
     def save_NN(self, e):
         self.model.save_weights('./models/m' + str(e))
