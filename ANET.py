@@ -10,16 +10,15 @@ import tensorflow as tf
 
 class ANET():
     
-    # The model will be accessible directly
-    model = None
-    
-    
+
     # Constructor
-    # lrate - learning rate of the NN
     # layers - a list with number of nodes in the layers, alternating with activation functions. The first value is the input shape only. Activating functions accepted - "lin" - linear , "sig" - sigmoid, "tan" - tanh, "rel" - RELU
     # optimizer - the optimizer used. Following are accepted - "ADA" - Adagrad; "SGD" - Stochastic Gradient Descent; "RMS" - RMSProp; "ADAM" - Adam
     # M - after how many games the information about the network is saved into a file
-    def __init__( self, lrate, layers, optimizer, M ):
+    def __init__( self,  layers, optimizer):
+        # The model will be accessible directly
+        self.model = None
+        # Create the network
         self.create_network(layers, optimizer)
     
     
@@ -28,17 +27,16 @@ class ANET():
     def create_network(self, layers, optimizer):
         
         # Create the model
-        self.model = tf.keras.models.Sequential()
+        self.model = tf.keras.Sequential()
 
         # Adding the input layer
-        # TODO check what shape should be here
-        self.model.add(tf.keras.layers.InputLayer(input_shape = (int(layers[0]),) ) )
+        self.model.add(tf.keras.Input(input_shape = (layers[0],) ) )
 
         # TODO use the activation functions specified in the layers argument 
         # Adding layers with number of nodes as specified in layers argument
         for i in range(len(layers[1:])):
 
-            # Care only for the odd values
+            # Care only for the odd values, even are for the actionvation function
             if i % 2 != 0:
                 self.model.add( tf.keras.layers.Dense( units = layers[i+1], activation = tf.nn.relu) )
     
@@ -47,20 +45,20 @@ class ANET():
         
         
     # Train the network
-    def fit(self):
-        pass
+    def fit(self, x, y, epochs = 1):
+        self.model.fit(x, y, epochs)
     
     
     # Returns the probability distribution over the possible moves
     # the first value is for 0,0; then 0,1 ; 0,2 . etc. e.g. col/row in accessing the gridp[col][row]
-    def pd(self):
-        pass
+    def predict(self, x):
+        return self.model.predict(x)
     
     
     # Returns the move that agent decides to make
-    # pd - probability distruvtion
+    # state - current state of the board
     # grate - e-greedy rate 
-    def policy(self, pd, grate):
+    def policy(self, state, grate):
         pass
     
     

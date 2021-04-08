@@ -22,12 +22,11 @@ class MCTS:
     # episodes - total number of training episodes to run
     # grate - greed rate in the tree selection policy
     # num_rollouts - number of rollouts in the simulation search 
-    def __init__( self, board_size, episodes, num_rollouts, grate, discount = 0.9):
+    def __init__( self, board_size, episodes, grate, num_rollouts = 1):
         self.board_size = board_size
         self.episodes = episodes
         self.num_rollouts = num_rollouts
         self.grate = grate
-        self.discount = discount
 
         # Set the root node 
         self.root = snode("".join("0" for s in range(board_size**2)) , None )
@@ -35,14 +34,11 @@ class MCTS:
         
     # Run the MCTS 
     def run(self):
-        
-        # Run on repeat for number of episodes
-        for e in range(self.episodes):
-            
-            anode = self.selection()
-            snode = self.expansion(anode)
-            reward, sel_anode = self.simulation(snode)
-            self.backup(sel_anode, reward)        
+                    
+        anode = self.selection()
+        snode = self.expansion(anode)
+        reward, sel_anode = self.simulation(snode)
+        self.backup(sel_anode, reward)        
         
         
     # The 4 horseman of MCTS
@@ -220,6 +216,8 @@ class snode():
             self.actions.append( anode( self, a) )
 
    
+    def get_visits(self):
+        pass
     
 # Action node
 class anode():
