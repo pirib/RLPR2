@@ -14,14 +14,15 @@ class ANET():
     
 
     # Constructor
-    # layers - a list with number of nodes in the layers, alternating with activation functions. The first value is the input shape only. Activating functions accepted - "lin" - linear , "sig" - sigmoid, "tan" - tanh, "rel" - RELU
-    # optimizer - the optimizer used. Following are accepted - "ADA" - Adagrad; "SGD" - Stochastic Gradient Descent; "RMS" - RMSProp; "ADAM" - Adam
-    # M - after how many games the information about the network is saved into a file
-    def __init__( self,  layers):
+    # layers - a list with number of nodes in the layers, alternating with activation functions. The first value is the input shape only. 
+    # ^ Activating functions accepted - "linear" , "sigmoid" , "tanh", "relu" 
+    # optimizer - the optimizer used. 
+    # ^ Following are accepted - "Adagrad" , "SGD" , "RMSprop" , "Adam" 
+    def __init__( self,  layers, optimizer = "SGD"):
         # The model will be accessible directly
         self.model = None
         # Create the network
-        self.create_network(layers, optimizer = tf.keras.optimizers.SGD)
+        self.create_network(layers, optimizer = optimizer)
     
     
     # Creates the network with specified parameters 
@@ -34,13 +35,12 @@ class ANET():
         # Adding the input layer
         self.model.add(tf.keras.layers.InputLayer(input_shape = ((layers[0],) ) ) )
 
-        # TODO use the activation functions specified in the layers argument 
         # Adding layers with number of nodes as specified in layers argument
         for i in range(len(layers[1:])):
 
             # Care only for the odd values, even are for the actionvation function
-            if i % 2 == 0:
-                self.model.add( tf.keras.layers.Dense( units = layers[i+1], activation = tf.nn.sigmoid) )
+            if i % 2 != 0:
+                self.model.add( tf.keras.layers.Dense( units = layers[i], activation = layers[i+1]) )
     
         # Add the output layer with softmax
         self.model.add(tf.keras.layers.Dense( units = layers[-1], activation='softmax' ) )
@@ -104,4 +104,4 @@ class ANET():
     
 
 
-anet = ANET( [ 16, 4, "", 4, "", 16] )
+anet = ANET( [ 16, 4, "sigmoid", 4, "sigmoid", 16], "SGD" )

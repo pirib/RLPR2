@@ -101,23 +101,27 @@ class MCTS:
             
             # Make a move based on the anode selected
             board.make_move(anode.action)
-            
-            # Random policy, e.g. moves are selected randomly
-            if policy == "r":
-                
-                # Make moves until the game is in terminal state
-                while not board.is_terminal()[0]:
-                    move = random.choice(board.get_available_actions())
-                    board.make_move(move)
-                    
-                # Return the reward of the terminal state
-                return board.get_reward()
-            
-            elif policy == "n":
-                # Ask anet to predict move for the next state
-                self.anet.predict(snode.state)
+                            
+            # Make moves until the game is in terminal state
+            while not board.is_terminal()[0]:
 
-        
+                move = None
+                
+                # Random policy, e.g. moves are selected randomly
+                if policy == "r":   
+                    move = random.choice(board.get_available_actions())
+                
+                # ANET should predict the next move
+                elif policy == "n":
+                    # Ask anet to predict move for the next state
+                    move = self.anet.predict(snode.state)
+
+                board.make_move(move)
+                
+            # Return the reward of the terminal state
+            return board.get_reward()
+
+
         # Select an action node to run simulations with
         anode = self.tree_policy(snode)
         
