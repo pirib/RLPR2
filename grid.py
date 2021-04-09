@@ -254,7 +254,15 @@ class Grid():
         nx.draw(G, labels, labels=labels, node_color=color_map)
         plt.pause(0.001)
 
-
+    # Returns the coordinate of the node given the index 
+    def get_coor(self, i):
+        
+        for row in self.grid:
+            for n in row:
+                if i == 0:
+                    return n.row , n.col
+                i-=1 
+                
     # End of the Class =============================================================
 
 
@@ -301,7 +309,7 @@ while ( True ):
 
 
 
-
+play = Grid(4)
 
 
 

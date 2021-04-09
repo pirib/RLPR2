@@ -114,9 +114,13 @@ class MCTS:
                 elif policy == "n":
                     # Ask anet to predict move for the next state
                     pd = self.anet.predict(snode.state)
-                    move = None
+                    # Get the index of the highest 
+                    i = pd.index(h.argmax( pd ))
                     
-
+                    
+                    
+                    
+                    
                 board.make_move(move)
                 
             # Return the reward of the terminal state
