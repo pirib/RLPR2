@@ -114,12 +114,11 @@ class MCTS:
                 elif policy == "n":
                     # Ask anet to predict move for the next state
                     pd = self.anet.predict(snode.state)
-                    # Get the index of the highest 
-                    i = pd.index(h.argmax( pd ))
-                    
-                    
-                    
-                    
+                    # Get the index of the highest PD value, then its coordinate
+                    move = board.get_coor( pd.index(h.argmax( pd )))
+                
+                else:
+                    raise Exception("MCTS does not support policy named " + policy)
                     
                 board.make_move(move)
                 
