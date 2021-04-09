@@ -105,27 +105,17 @@ class Grid():
             raise Exception("Anomalous board state - number of pieces for player 1 is less that number of pieces for player 2!")
 
                 
-    # Places a piece into the an empty spot as specified by coor tuple or a string of the new state
+    # Places a piece into the an empty spot as specified by coor tuple 
     # This function moves the grid into a new state
     def make_move(self, coor):
         
-        # If is a tuple, change the value of the 
-        if coor.type() == tuple:
-            player = self.get_player()
-            
-            if self.grid[coor[0]][coor[1]].piece == 0 :
-                self.grid[coor[0]][coor[1]].piece = player
-            else: 
-                raise Exception("Player " + player + " attempted to make an illegal move!")
+        player = self.get_player()
         
-        # If is a string
-        elif coor.type() == str:
-            
-            # First check that 1 move has been actually made
-            if self.get_state().count["0"] - coor.count["0"] == 1:
-                self.set_from_state(coor)
-            else:
-                raise Exception("The move attempted cannot be reached from current state")
+        if self.grid[coor[0]][coor[1]].piece == 0 :
+            self.grid[coor[0]][coor[1]].piece = player
+        else: 
+            raise Exception("Player " + player + " attempted to make an illegal move!")
+    
 
     # Returns the state representation. if compact == True then a string with 0 for empty, 1 and 2 for player 1 and 2 will be returned
     def get_state(self, compact = True):

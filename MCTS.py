@@ -114,7 +114,7 @@ class MCTS:
                 elif policy == "n":
                     # Ask anet to predict move for the next state
                     pd = self.anet.predict(snode.state)
-
+                    move = None
                     
 
                 board.make_move(move)
