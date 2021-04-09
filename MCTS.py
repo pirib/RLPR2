@@ -10,7 +10,6 @@ import grid
 import h
 
 # For general funciton
-import copy
 import random
 
 class MCTS:
@@ -114,7 +113,9 @@ class MCTS:
                 # ANET should predict the next move
                 elif policy == "n":
                     # Ask anet to predict move for the next state
-                    move = self.anet.predict(snode.state)
+                    pd = self.anet.predict(snode.state)
+
+                    
 
                 board.make_move(move)
                 
