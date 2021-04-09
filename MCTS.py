@@ -14,21 +14,21 @@ import copy
 import random
 
 class MCTS:
-    
-    # The root of the MCTS - constructor initiliazes the parent to None, while state is a string with all 0 for board_size**2
-    root = None
-    
+     
     # Constructor
+    # anet - the neural network that should be used for rollout selection
     # episodes - total number of training episodes to run
     # grate - greed rate in the tree selection policy
     # num_rollouts - number of rollouts in the simulation search 
-    def __init__( self, board_size, episodes, grate, num_rollouts = 1):
+    def __init__( self, anet, board_size, episodes, grate, num_rollouts = 1):
+        self.anet = anet
         self.board_size = board_size
         self.episodes = episodes
         self.num_rollouts = num_rollouts
         self.grate = grate
 
         # Set the root node 
+        # The root of the MCTS - constructor initiliazes the parent to None, while state is a string with all 0 for board_size**2
         self.root = snode("".join("0" for s in range(board_size**2)) , None )
         
         
@@ -114,7 +114,8 @@ class MCTS:
                 return board.get_reward()
             
             elif policy == "n":
-                raise Exception("Policy other than random rollout have not been done yet")
+                # Ask anet to predict move for the next state
+                self.anet.predict(snode.state)
 
         
         # Select an action node to run simulations with

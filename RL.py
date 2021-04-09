@@ -36,7 +36,8 @@ class RL():
             # s_init = board.get_state()
 
             # c. Initialize the MCTS
-            mcts = mt.MCTS(board_size = board_size, 
+            mcts = mt.MCTS(     anet = self.ANET,
+                                board_size = board_size, 
                                 episodes = episodes, 
                                 num_search_games = num_search_games, 
                                 grate = grate)
@@ -45,7 +46,7 @@ class RL():
             while not board.is_terminal():
                 
                 # Start running mcts with the root (does so by the default)
-                self.mcts.run()
+                mcts.run()
                 
                 
                 

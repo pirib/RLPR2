@@ -40,10 +40,10 @@ class ANET():
 
             # Care only for the odd values, even are for the actionvation function
             if i % 2 == 0:
-                self.model.add( tf.keras.layers.Dense( units = layers[i+1], activation = tf.nn.relu) )
+                self.model.add( tf.keras.layers.Dense( units = layers[i+1], activation = tf.nn.sigmoid) )
     
-        # Add the output layer
-        self.model.add(tf.keras.layers.Dense( units = layers[-1] ) )
+        # Add the output layer with softmax
+        self.model.add(tf.keras.layers.Dense( units = layers[-1], activation='softmax' ) )
     
         # Compile the model
         # TODO optimizer is set by default to SGD
@@ -80,15 +80,15 @@ class ANET():
     def policy(self, state):
         
         # Get the numpy array of distributions
-        pd = self.model(state)        
+        pd = self.predict(state).tolist()[0]       
     
         # Not all the moves in there are possible, need to normalize the output
         # Set all pd values where state is not zero to zero (e.g. where the move is not possible)
-        for oi, si in zip(range(len(pd)), state):
+        for oi, si in zip(range( len(pd)), state):
             if si != "0":    pd[oi] = 0    
      
         # Now, normalize the pd   
-        pd = pd / sum(pd)
+        pd = [i/sum(pd) for i in pd ]
         return pd
     
          
