@@ -9,6 +9,7 @@ import tensorflow as tf
 import numpy as np
 import random
 
+
 class ANET():
     
 
@@ -16,44 +17,62 @@ class ANET():
     # layers - a list with number of nodes in the layers, alternating with activation functions. The first value is the input shape only. Activating functions accepted - "lin" - linear , "sig" - sigmoid, "tan" - tanh, "rel" - RELU
     # optimizer - the optimizer used. Following are accepted - "ADA" - Adagrad; "SGD" - Stochastic Gradient Descent; "RMS" - RMSProp; "ADAM" - Adam
     # M - after how many games the information about the network is saved into a file
-    def __init__( self,  layers, optimizer):
+    def __init__( self,  layers):
         # The model will be accessible directly
         self.model = None
         # Create the network
-        self.create_network(layers, optimizer)
+        self.create_network(layers, optimizer = tf.keras.optimizers.SGD)
     
     
     # Creates the network with specified parameters 
     # NOTE softmax activation function should be used for the output
     def create_network(self, layers, optimizer):
-        
+
         # Create the model
         self.model = tf.keras.Sequential()
 
         # Adding the input layer
-        self.model.add(tf.keras.Input(input_shape = (layers[0],) ) )
+        self.model.add(tf.keras.layers.InputLayer(input_shape = ((layers[0],) ) ) )
 
         # TODO use the activation functions specified in the layers argument 
         # Adding layers with number of nodes as specified in layers argument
         for i in range(len(layers[1:])):
 
             # Care only for the odd values, even are for the actionvation function
-            if i % 2 != 0:
+            if i % 2 == 0:
                 self.model.add( tf.keras.layers.Dense( units = layers[i+1], activation = tf.nn.relu) )
     
+        # Add the output layer
+        self.model.add(tf.keras.layers.Dense( units = layers[-1] ) )
+    
         # Compile the model
-        self.model.compile(optimizer = optimizer)
+        # TODO optimizer is set by default to SGD
+        self.model.compile(optimizer = 'SGD', loss = 'mean_squared_error')
         
         
     # Train the network
-    def fit(self, x, y, epochs = 1):
-        self.model.fit(x, y, epochs)
+    def train(self, state, visit_counts, epochs = 1):
+        
+        # Setting the dimensions of the training data
+        x = np.array(self.state_to_arr( state))
+        x = np.expand_dims(x,0)
+        
+        # Seeting the dimensions of the ouptut 
+        y = np.array(visit_counts)
+        y = np.expand_dims(y,0)
+        
+        self.model.fit( x, y, epochs)
     
     
     # Returns the probability distribution over the possible moves
-    # the first value is for 0,0; then 0,1 ; 0,2 . etc. e.g. col/row in accessing the gridp[col][row]
-    def predict(self, x):
-        return self.model.predict(x)
+    def predict(self, state):
+        
+        # Setting the dimensions of the state
+        x = np.array(self.state_to_arr( state))
+        x = np.expand_dims(x,0)
+        
+        # Feed the model a int array of the state
+        return self.model.predict( x )
     
     
     # Returns the move that agent decides to make
@@ -70,14 +89,19 @@ class ANET():
      
         # Now, normalize the pd   
         pd = pd / sum(pd)
-
-        
-        
-
+        return pd
+    
+         
     # Saves the NN information to a file
     def save_NN(self, e):
         self.model.save_weights('./models/m' + str(e))
     
     
+    # Helpers
+    # Takes in the board_state and turns it into the array of ints
+    def state_to_arr(self, board_state):
+        return [int(i) for i in tuple(board_state)]
     
-    
+
+
+anet = ANET( [ 16, 4, "", 4, "", 16] )
