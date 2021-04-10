@@ -113,8 +113,10 @@ class MCTS:
                 
                 # ANET should predict the next move
                 elif policy == "n":
+                    
                     # Ask anet to predict move for the next state
-                    pd = self.anet.predict(snode.state)
+                    pd = self.anet.policy(board.get_state())
+                    
                     # Get the index of the highest PD value, then its coordinate
                     move = board.get_coor( pd.index(h.argmax( pd )))
                 
@@ -167,7 +169,7 @@ class MCTS:
     
     # The tree policy - e-greedy policy, expects a state node, returns an action node
     # The choice the tree makes is based on the VALUES of the actions rather than visit statistics
-    def tree_policy(self, snode):
+    def tree_policy(self, snode ):
 
         # If the board is already in the terminal state, e.g. no actions are available, return None
         if h.is_empty(snode.actions):
@@ -182,18 +184,15 @@ class MCTS:
         else:
             
             # Get the state info
-            s = snode.state
-                        
-            # Count number of pieces belonging to the players
-            num_p1 = s.count("1")
-            num_p2 = s.count("2")
-            
-            if num_p1 > num_p2:
-                anode = h.argmin(snode.actions, lambda a : a.value)
-            elif num_p1 == num_p2:
+            board = grid.Grid( self.board_size )
+            board.set_from_state(snode.state)
+                                    
+            # Make a move depending whose turn it is
+            if board.get_player() == 1:
                 anode = h.argmax(snode.actions, lambda a : a.value)
             else:
-                raise Exception("Shit's fucked yo.")
+                anode = h.argmin(snode.actions, lambda a : a.value)
+            
 
         return anode
     

@@ -42,23 +42,26 @@ class RL():
 
             # c. Initialize the MCTS
             self.mcts = mt.MCTS(     anet = self.ANET,
-                                board_size = board_size, 
-                                episodes = episodes, 
-                                num_search_games = num_search_games, 
-                                rollout_policy = rollout_policy,
-                                grate = grate)
+                                    board_size = board_size, 
+                                    episodes = episodes, 
+                                    num_search_games = num_search_games, 
+                                    rollout_policy = rollout_policy,
+                                    grate = grate)
             
             # d. Run it while the time remains
             t_end = time.time() + 2
             while time.time() < t_end:
-                
+                print("fuck")
                 # Start running mcts with the root (does so by the default). Uses ANET by default. Rollouts are done num_search_games times. 
                 self.mcts.run()
-                
-                # e. Training ANET from the 
+
+                # e. Training ANET 
                 self.RBUF.append( ( self.mcts.root.state , self.mcts.root.get_visits()  ) )
+
+                # Update the root, based on the best action
+                
             
-            
+
             # e. Train ANET from the RBUF            
             for i in range(int(len(self.RBUF) / 5 ) ):
                 # Pick a random training case
@@ -69,9 +72,8 @@ class RL():
                 
             # f. Save the parameters of the NN for the evaluation
             if e % M == 0:
-                pass
-                # self.ANET.save_NN(e)
-            
+                self.ANET.save_NN(e)
+                
             
     # Play using ANET
     def play(self, print_grid = True):
@@ -80,6 +82,7 @@ class RL():
         
         # Play until in the final state
         while not play.is_terminal()[0]:
+            
             # Get the probability distribution from ANET
             pd = self.ANET.policy(play.get_state())
             
@@ -95,14 +98,14 @@ class RL():
 start_time = time.time()
 
 rl = RL(
-        board_size = 5, 
-        episodes = 100, 
+        board_size = 3, 
+        episodes = 50, 
         num_search_games = 100, 
-        rollout_policy = "r", 
+        rollout_policy = "n", 
         grate = 0.2, 
-        M = 200, 
+        M = 50, 
         
-        nn_layers = [ 4, "sigmoid", 4, "sigmoid"], 
+        nn_layers = [ 5, "sigmoid", 5, "sigmoid"], 
         nn_optimizer = "SGD"
 )
 

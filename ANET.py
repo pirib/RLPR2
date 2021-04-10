@@ -48,7 +48,7 @@ class ANET():
     
         # Compile the model
         # TODO optimizer is set by default to SGD
-        self.model.compile(optimizer = 'SGD', loss = 'mean_squared_error')
+        self.model.compile(optimizer = optimizer, loss = 'mean_squared_error')
         
         
     # Train the network
@@ -73,7 +73,7 @@ class ANET():
         x = np.expand_dims(x,0)
         
         # Feed the model a int array of the state
-        return self.model.predict( x )
+        return self.model( x )
     
     
     # Returns the move that agent decides to make
@@ -81,7 +81,7 @@ class ANET():
     def policy(self, state):
         
         # Get the numpy array of distributions
-        pd = self.predict(state).tolist()[0]       
+        pd = np.array(self.predict(state))[0]
     
         # Not all the moves in there are possible, need to normalize the output
         # Set all pd values where state is not zero to zero (e.g. where the move is not possible)

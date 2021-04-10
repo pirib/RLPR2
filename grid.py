@@ -99,7 +99,7 @@ class Grid():
         
         if num_p1 > num_p2:
             return 2
-        elif num_p1 == num_p2:
+        elif num_p1 == num_p2 or (num_p1 == 0 and num_p2 == 0):
             return 1
         else:
             raise Exception("Anomalous board state - number of pieces for player 1 is less that number of pieces for player 2!")
@@ -114,7 +114,7 @@ class Grid():
         if self.grid[coor[0]][coor[1]].piece == 0 :
             self.grid[coor[0]][coor[1]].piece = player
         else: 
-            raise Exception("Player " + player + " attempted to make an illegal move!")
+            raise Exception("Player " + str(player) + " attempted to make an illegal move!")
     
 
     # Returns the state representation. if compact == True then a string with 0 for empty, 1 and 2 for player 1 and 2 will be returned
@@ -305,11 +305,6 @@ while ( True ):
 
 
 
-
-
-
-
-play = Grid(4)
 
 
 
