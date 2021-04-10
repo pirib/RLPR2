@@ -41,7 +41,7 @@ class RL():
             # s_init = board.get_state()
 
             # c. Initialize the MCTS
-            self.mcts = mt.MCTS(     anet = self.ANET,
+            self.mcts = mt.MCTS(    anet = self.ANET,
                                     board_size = board_size, 
                                     episodes = episodes, 
                                     num_search_games = num_search_games, 
@@ -49,8 +49,10 @@ class RL():
                                     grate = grate)
             
             # d. Run it while the time remains
+            # TODO also add a check for board being in terminal
             t_end = time.time() + 2
             while time.time() < t_end:
+                
                 print("fuck")
                 # Start running mcts with the root (does so by the default). Uses ANET by default. Rollouts are done num_search_games times. 
                 self.mcts.run()
@@ -59,8 +61,22 @@ class RL():
                 self.RBUF.append( ( self.mcts.root.state , self.mcts.root.get_visits()  ) )
 
                 # Update the root, based on the best action
+                         
+                board = grid.Grid( self.board_size )
+                board.set_from_state(self.mcts.root.state)
+                                        
+                # Make a move depending whose turn it is
+                if board.get_player() == 1:
+                    anode = h.argmax(self.mcts.root.actions, lambda a : a.value)
+                else:
+                    anode = h.argmin(self.mcts.root.actions, lambda a : a.value)
                 
-            
+                board.make_move(anode.action)
+                
+                self.mcts.root = mt.snode( board.get_state() , None)
+                
+                if board.is_terminal()[0]:
+                    break
 
             # e. Train ANET from the RBUF            
             for i in range(int(len(self.RBUF) / 5 ) ):
@@ -98,10 +114,10 @@ class RL():
 start_time = time.time()
 
 rl = RL(
-        board_size = 3, 
+        board_size = 5, 
         episodes = 50, 
         num_search_games = 100, 
-        rollout_policy = "n", 
+        rollout_policy = "r", 
         grate = 0.2, 
         M = 50, 
         

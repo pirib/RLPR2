@@ -37,12 +37,14 @@ class Grid():
         self.size = size
         
         
+        
     # Destructor - also removes all the nodes.
     def __del__(self): 
         for row in self.grid:
             for node in row:
                 del node
         del self
+        
         
         
     # Creates the grid
@@ -76,7 +78,8 @@ class Grid():
                         except:
                             pass                 
         
-        
+    
+    
     # Sets the values of the grid based on the bistring state supplied
     def set_from_state(self, state):
         
@@ -85,6 +88,7 @@ class Grid():
             for node in row:
                 node.insert_piece(state[i])
                 i += 1
+        
         
         
     # Returns the current player - based on the number of pieces on the board
@@ -104,7 +108,8 @@ class Grid():
         else:
             raise Exception("Anomalous board state - number of pieces for player 1 is less that number of pieces for player 2!")
 
-                
+             
+   
     # Places a piece into the an empty spot as specified by coor tuple 
     # This function moves the grid into a new state
     def make_move(self, coor):
@@ -115,6 +120,7 @@ class Grid():
             self.grid[coor[0]][coor[1]].piece = player
         else: 
             raise Exception("Player " + str(player) + " attempted to make an illegal move!")
+    
     
 
     # Returns the state representation. if compact == True then a string with 0 for empty, 1 and 2 for player 1 and 2 will be returned
@@ -140,6 +146,7 @@ class Grid():
             return tuple(state)
 
 
+
     # Returns a tuple of tuples with empty spots
     def get_available_actions(self):
         
@@ -151,6 +158,7 @@ class Grid():
                     actions.append( (node.row, node.col) )
                     
         return tuple(actions)
+        
         
         
     # Depth-first search from an opposing side to another
@@ -181,8 +189,7 @@ class Grid():
                     # Else, iterate further
                     if iterate(n, visited, player):
                         return True
-                     
-                               
+                                          
         # Checking for each possible player
         for player in range(1,3):
             
@@ -254,6 +261,7 @@ class Grid():
         nx.draw(G, labels, labels=labels, node_color=color_map)
         plt.pause(0.001)
 
+
     # Returns the coordinate of the node given the index 
     def get_coor(self, i):
         
@@ -280,28 +288,6 @@ def create_board(state):
     board.set_from_state(state)
     
     return board
-
-
-
-# Plays a game randomly picking available actions
-"""
-play = Grid(4)
-
-player = 1    
-while ( True ):
-    temp = random.choice(  play.get_available_actions()  )
-    play.make_move( temp )
-    #time.sleep(0.5)
-    play.print_grid()
-    print("Player " + str(player) + " places a piece in " + str(temp))
-    player = 2 if player == 1 else 1
-    
-    results = play.is_terminal()
-    if results[0]:
-        print("Player " + str(results[1]) + " won the game!")
-        break
-    
-"""
 
 
 

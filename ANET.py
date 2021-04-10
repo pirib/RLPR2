@@ -26,8 +26,8 @@ class ANET():
         self.create_network(layers, optimizer = optimizer)
     
     
+    
     # Creates the network with specified parameters 
-    # NOTE softmax activation function should be used for the output
     def create_network(self, layers, optimizer):
 
         # Create the model
@@ -51,6 +51,7 @@ class ANET():
         self.model.compile(optimizer = optimizer, loss = 'mean_squared_error')
         
         
+        
     # Train the network
     def train(self, state, visit_counts, epochs = 1):
         
@@ -65,6 +66,7 @@ class ANET():
         self.model.fit( x, y, epochs, verbose = 0)
     
     
+    
     # Returns the probability distribution over the possible moves
     def predict(self, state):
         
@@ -74,6 +76,7 @@ class ANET():
         
         # Feed the model a int array of the state
         return self.model( x )
+    
     
     
     # Returns the move that agent decides to make
@@ -92,13 +95,16 @@ class ANET():
         pd = [i/sum(pd) for i in pd ]
         return pd
     
-         
+    
+    
     # Saves the NN information to a file
     def save_NN(self, e):
         self.model.save_weights('./models/m' + str(e))
     
     
+    
     # Helpers
+    
     # Takes in the board_state and turns it into the array of ints
     def state_to_arr(self, board_state):
         return [int(i) for i in tuple(board_state)]

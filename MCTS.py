@@ -127,7 +127,7 @@ class MCTS:
                 
             # Return the reward of the terminal state
             return board.get_reward()
-
+        # ============================================
 
         # Select an action node to run simulations with
         anode = self.tree_policy(snode)
@@ -145,6 +145,7 @@ class MCTS:
         
         # Return the average reward from all the rollouts and the anode that was chosen
         return tr/self.num_search_games, anode
+    
     
     
     # Backpropagate the reward information down to the root
@@ -166,6 +167,7 @@ class MCTS:
         # Call the function iteratively
         bp(anode)
         
+    
     
     # The tree policy - e-greedy policy, expects a state node, returns an action node
     # The choice the tree makes is based on the VALUES of the actions rather than visit statistics
@@ -193,7 +195,6 @@ class MCTS:
             else:
                 anode = h.argmin(snode.actions, lambda a : a.value)
             
-
         return anode
     
 
