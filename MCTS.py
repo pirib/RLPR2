@@ -19,11 +19,12 @@ class MCTS:
     # episodes - total number of training episodes to run
     # grate - greed rate in the tree selection policy
     # num_rollouts - number of rollouts in the simulation search 
-    def __init__( self, anet, board_size, episodes, grate, num_rollouts = 1):
+    def __init__( self, anet, board_size, episodes, grate, rollout_policy = "n", num_search_games = 1):
         self.anet = anet
         self.board_size = board_size
         self.episodes = episodes
-        self.num_rollouts = num_rollouts
+        self.num_search_games = num_search_games
+        self.policy = rollout_policy
         self.grate = grate
 
         # Set the root node 
@@ -36,7 +37,7 @@ class MCTS:
                     
         anode = self.selection()
         snode = self.expansion(anode)
-        reward, sel_anode = self.simulation(snode)
+        reward, sel_anode = self.simulation(snode, self.policy)
         self.backup(sel_anode, reward)        
         
         
@@ -88,12 +89,12 @@ class MCTS:
     
     # From the chosen state node, tree policy selects an action from which the rollout simulations are ran
     # Returns the reward and the anode that was chosen (for backup)
-    def simulation(self, snode):
+    def simulation(self, snode, policy = "n"):
 
         # Execute a roullout search - returns a reward from the terminal state
         # anode - the anode from which the rollouts will be made
         # policy - the policy that the rollout should use for simulations
-        def rollout(anode, policy = "r"):
+        def rollout(anode, policy):
             
             # Make the board from the anode's parent's state
             board = grid.create_board(anode.parent.state)
@@ -137,11 +138,11 @@ class MCTS:
                 
         # Calculate the average rewards from all the rollouts done
         tr = 0
-        for r in range(self.num_rollouts):
-            tr += rollout(anode)
+        for r in range(self.num_search_games):
+            tr += rollout(anode, policy)
         
         # Return the average reward from all the rollouts and the anode that was chosen
-        return tr/self.num_rollouts, anode
+        return tr/self.num_search_games, anode
     
     
     # Backpropagate the reward information down to the root
@@ -165,6 +166,7 @@ class MCTS:
         
     
     # The tree policy - e-greedy policy, expects a state node, returns an action node
+    # The choice the tree makes is based on the VALUES of the actions rather than visit statistics
     def tree_policy(self, snode):
 
         # If the board is already in the terminal state, e.g. no actions are available, return None
@@ -224,9 +226,22 @@ class snode():
         for a in board.get_available_actions():
             self.actions.append( anode( self, a) )
 
-   
+
+    # Get the array consisting of the visit counts. 0 is set for the un available actions
     def get_visits(self):
-        pass
+        
+        # Initialize a board for the same state
+        board = grid.Grid(len(self.state))
+        board = grid.set_from_state(self.state)
+        
+        visits = []
+
+        for n in board.get_state(False):
+            if n in self.actions:
+                visits.append( self.actions[self.actions.index(n)].visits )                        
+            else:
+                visits.append(0)
+        
     
 # Action node
 class anode():

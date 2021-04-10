@@ -103,5 +103,3 @@ class ANET():
         return [int(i) for i in tuple(board_state)]
     
 
-
-anet = ANET( [ 16, 4, "sigmoid", 4, "sigmoid", 16], "SGD" )

@@ -16,7 +16,7 @@ import time
 class RL():
 
     # Constructor
-    def __init__(self, board_size, episodes, num_search_games, grate, M, nn_layers, nn_optimizer):
+    def __init__(self, board_size, episodes, num_search_games, rollout_policy, grate, M, nn_layers, nn_optimizer):
         
         # 1. M is the save interval for ANET parameters
         
@@ -28,7 +28,7 @@ class RL():
         
         # 4. Start working through episodes/epochs
         for e in range(episodes):
-        
+            
             # a. Initialize the actual game board
             board = grid.Grid(board_size)    
 
@@ -40,25 +40,62 @@ class RL():
                                 board_size = board_size, 
                                 episodes = episodes, 
                                 num_search_games = num_search_games, 
+                                rollout_policy = rollout_policy,
                                 grate = grate)
             
             # d. While the board is not in terminal state
-            while not board.is_terminal():
-                
-                # Start running mcts with the root (does so by the default)
+            while not board.is_terminal()[0]:
+
+                # Start running mcts with the root (does so by the default). Uses ANET by default. Rollouts are done num_search_games times. 
                 mcts.run()
-                
-                
-                
-                
-            # e. Training ANET from the 
+                     
+                # e. Training ANET from the 
+                self.RBUF.append( ( mcts.root ,   ) )
             
             # f. Save the parameters of the NN for the evaluation
             if e % M == 0:
-                self.ANET.save_NN()
+                self.ANET.save_NN(e)
 
     
     
 start_time = time.time()
-rl = RL(4, 1000, 600, 0.2)
+
+rl = RL(
+        board_size = 4, 
+        episodes = 500, 
+        num_search_games = 300, 
+        rollout_policy = "r", 
+        grate = 0.2, 
+        M = 200, 
+        
+        nn_layers = [ 4, "sigmoid", 4, "sigmoid", 16], 
+        nn_optimizer = "SGD"
+)
+
+
+
+
 print("--- %s seconds ---" % (time.time() - start_time))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
