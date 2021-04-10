@@ -97,10 +97,10 @@ class Grid():
         num_p1 = s.count("1")
         num_p2 = s.count("2")
         
-        if num_p1 > num_p2 or (num_p1 == num_p2 and num_p1 == 0):
-            return 1
-        elif num_p1 == num_p2:
+        if num_p1 > num_p2:
             return 2
+        elif num_p1 == num_p2:
+            return 1
         else:
             raise Exception("Anomalous board state - number of pieces for player 1 is less that number of pieces for player 2!")
 
@@ -110,7 +110,7 @@ class Grid():
     def make_move(self, coor):
         
         player = self.get_player()
-        
+
         if self.grid[coor[0]][coor[1]].piece == 0 :
             self.grid[coor[0]][coor[1]].piece = player
         else: 

@@ -188,10 +188,10 @@ class MCTS:
             num_p1 = s.count("1")
             num_p2 = s.count("2")
             
-            if num_p1 > num_p2 or ( num_p1 == num_p2 and num_p1 == 0):
-                anode = h.argmax(snode.actions, lambda a : a.value)
-            elif num_p1 == num_p2:
+            if num_p1 > num_p2:
                 anode = h.argmin(snode.actions, lambda a : a.value)
+            elif num_p1 == num_p2:
+                anode = h.argmax(snode.actions, lambda a : a.value)
             else:
                 raise Exception("Shit's fucked yo.")
 
@@ -231,17 +231,21 @@ class snode():
     def get_visits(self):
         
         # Initialize a board for the same state
-        board = grid.Grid(len(self.state))
-        board = grid.set_from_state(self.state)
+        board = grid.Grid( int(len(self.state)**0.5) )
+        board.set_from_state(self.state)
         
         visits = []
 
         for n in board.get_state(False):
-            if n in self.actions:
-                visits.append( self.actions[self.actions.index(n)].visits )                        
-            else:
-                visits.append(0)
-        
+            for a in self.actions:
+                if n == a.action:
+                    visits.append( self.actions[self.actions.index(a)].visits )   
+                    break
+                else:
+                    visits.append(0)
+                    break
+                
+        return visits
     
 # Action node
 class anode():

@@ -9,6 +9,7 @@ import tensorflow as tf
 import numpy as np
 import random
 
+tf.config.optimizer.set_jit(True)
 
 class ANET():
     
@@ -33,7 +34,7 @@ class ANET():
         self.model = tf.keras.Sequential()
 
         # Adding the input layer
-        self.model.add(tf.keras.layers.InputLayer(input_shape = ((layers[0],) ) ) )
+        self.model.add(tf.keras.layers.InputLayer(input_shape = (layers[0],) ))
 
         # Adding layers with number of nodes as specified in layers argument
         for i in range(len(layers[1:])):
@@ -61,7 +62,7 @@ class ANET():
         y = np.array(visit_counts)
         y = np.expand_dims(y,0)
         
-        self.model.fit( x, y, epochs)
+        self.model.fit( x, y, epochs, verbose = 0)
     
     
     # Returns the probability distribution over the possible moves
