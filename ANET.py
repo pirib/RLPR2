@@ -19,11 +19,12 @@ class ANET():
     # ^ Activating functions accepted - "linear" , "sigmoid" , "tanh", "relu" 
     # optimizer - the optimizer used. 
     # ^ Following are accepted - "Adagrad" , "SGD" , "RMSprop" , "Adam" 
-    def __init__( self,  layers, optimizer = "SGD"):
+    def __init__( self,  layers = None, optimizer = "SGD"):
         # The model will be accessible directly
         self.model = None
         # Create the network
-        self.create_network(layers, optimizer = optimizer)
+        if layers:
+            self.create_network(layers, optimizer = optimizer)
     
     
     
@@ -98,9 +99,13 @@ class ANET():
     
     
     # Saves the NN information to a file
-    def save_NN(self, e):
-        self.model.save_weights('./models/m' + str(e))
+    def save(self, e):
+        self.model.save('./models/m' + str(e))
     
+    # Load the model
+    def load(self, e):
+        self.model = tf.keras.models.load_model('./models/m' + str(e))
+        
     
     
     # Helpers

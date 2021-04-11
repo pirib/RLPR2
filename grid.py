@@ -150,6 +150,9 @@ class Grid():
     # Returns a tuple of tuples with empty spots
     def get_available_actions(self):
         
+        if self.is_terminal()[0]:
+            return None
+        
         actions = []
         
         for row in self.grid:

@@ -19,10 +19,10 @@ class MCTS:
     # episodes - total number of training episodes to run
     # grate - greed rate in the tree selection policy
     # num_rollouts - number of rollouts in the simulation search 
-    def __init__( self, anet, board_size, episodes, grate, rollout_policy = "n", num_search_games = 1):
+    def __init__( self, anet, board_size, grate, rollout_policy = "n", num_search_games = 1):
+        
         self.anet = anet
         self.board_size = board_size
-        self.episodes = episodes
         self.num_search_games = num_search_games
         self.policy = rollout_policy
         self.grate = grate
@@ -31,16 +31,18 @@ class MCTS:
         # The root of the MCTS - constructor initiliazes the parent to None, while state is a string with all 0 for board_size**2
         self.root = snode("".join("0" for s in range(board_size**2)) , None )
         
+        # The board this MCTS's root is currently in    
+        self.board = grid.Grid(board_size)
         
-    # Run the MCTS 
+    # Run the MCTS
     def run(self):
-                    
-        anode = self.selection()
+        
+        anode = self.selection() 
         snode = self.expansion(anode)
         reward, sel_anode = self.simulation(snode, self.policy)
         self.backup(sel_anode, reward)        
-        
-        
+
+    
     # The 4 horseman of MCTS
     
     # e-greedy tree traversal - picks the node that should be expaned further (e.g. pick a state/action pair). 
@@ -50,16 +52,15 @@ class MCTS:
         # Iterates through the tree, starting at the root, with action leading to it
         def iterate(snode):
             
-            # 1. Select an action using tree policy
-            anode = self.tree_policy(snode)
-                       
-            # 2. See what the action selection led us to
+            # 1. Check if the received snode in terminal state or not
+
+            # 2. Select an action using tree policy
+            anode = self.tree_policy(snode, self.grate)
+            
+            # 3. See what the action selection led us to
                 
             # If the action has no child we are done, this is our new leaf node, the expansion happens next
-            if not anode:
-                return snode.parent
-            
-            if not anode.child:
+            if anode.child == None:
                 return anode
 
             # If there is a child node attached, then we just jump further
@@ -87,7 +88,7 @@ class MCTS:
         return anode.child
     
     
-    # From the chosen state node, tree policy selects an action from which the rollout simulations are ran
+    # From the chosen state node, tree policy selects an action from which the rollout simulation is run
     # Returns the reward and the anode that was chosen (for backup)
     def simulation(self, snode, policy = "n"):
 
@@ -114,15 +115,15 @@ class MCTS:
                 # ANET should predict the next move
                 elif policy == "n":
                     
-                    # Ask anet to predict move for the next state
+                    # Ask anet to select the move for the next state
                     pd = self.anet.policy(board.get_state())
                     
                     # Get the index of the highest PD value, then its coordinate
-                    move = board.get_coor( pd.index(h.argmax( pd )))
+                    move = board.get_coor( pd.index(h.argmax( pd )) )
                 
                 else:
                     raise Exception("MCTS does not support policy named " + policy)
-                    
+                
                 board.make_move(move)
                 
             # Return the reward of the terminal state
@@ -130,21 +131,16 @@ class MCTS:
         # ============================================
 
         # Select an action node to run simulations with
-        anode = self.tree_policy(snode)
+        anode = self.tree_policy(snode, self.grate)
         
-        # If anode is None
+        # If anode is None - then the board is in terminal state, game has finished.
         if not anode:
-            # Then the board is in terminal state, we just need to return its reward (there is no need for Rollouts)
+            # We just need to return its reward (there is no need for Rollouts)
             board = grid.create_board(snode.state)
             return board.get_reward(), snode.parent
                 
-        # Calculate the average rewards from all the rollouts done
-        tr = 0
-        for r in range(self.num_search_games):
-            tr += rollout(anode, policy)
-        
         # Return the average reward from all the rollouts and the anode that was chosen
-        return tr/self.num_search_games, anode
+        return rollout(anode, policy), anode
     
     
     
@@ -155,8 +151,7 @@ class MCTS:
         def bp(anode):
             
             # Update the visit count and the new value for the state/action value
-            anode.visits += 1
-            anode.update_value(reward)
+            anode.update_value_visit(reward)
             
             # If the anode's parent's parent is not None 
             # (e.g. we haven't reached the root yet), then continue propagating upwards
@@ -169,14 +164,19 @@ class MCTS:
         
     
     
-    # The tree policy - e-greedy policy, expects a state node, returns an action node
-    # The choice the tree makes is based on the VALUES of the actions rather than visit statistics
-    def tree_policy(self, snode ):
+    # The tree policy - e-greedy policy, expects a state node, returns an action node.
+    # The choice the tree makes is based on the VALUES of the actions
+    def tree_policy(self, snode, grate):
 
         # If the board is already in the terminal state, e.g. no actions are available, return None
-        if h.is_empty(snode.actions):
+        if h.is_empty(snode) :
+            raise Exception("Tree policy received a None instead of a snode")
+        elif h.is_empty(snode.actions):
             return None
-                           
+            play = grid.create_board(snode.state)
+            play.print_grid()
+            raise Exception("Tree policy received a terminal state. State is " + snode.state)
+            
         # With grate probability explore
         if random.random() <= self.grate:
             # Pick a move randomly
@@ -195,6 +195,7 @@ class MCTS:
             else:
                 anode = h.argmin(snode.actions, lambda a : a.value)
             
+
         return anode
     
 
@@ -223,8 +224,13 @@ class snode():
         board = grid.create_board(parent.state)
         
         # Generate actions
-        for a in board.get_available_actions():
-            self.actions.append( anode( self, a) )
+        aa = board.get_available_actions()
+        
+        if aa == None:
+            self.actions = None
+        else:
+            for a in board.get_available_actions():
+                self.actions.append( anode( self, a) )
 
 
     # Get the array consisting of the visit counts. 0 is set for the un available actions
@@ -265,8 +271,9 @@ class anode():
         self.child = None
 
 
-    def update_value(self, new_value):
+    def update_value_visit(self, new_value):
         tv = self.value * self.visits
+        self.visits += 1
         self.value = (tv + new_value) / self.visits 
 
 

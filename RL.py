@@ -34,7 +34,7 @@ class RL():
         # 4. Start working through episodes/epochs
         for e in range(episodes):
             
-            # a. Initialize the actual game board
+            # a. Initialize an empty board
             board = grid.Grid(board_size)    
 
             # b. The initial board state
@@ -43,52 +43,43 @@ class RL():
             # c. Initialize the MCTS
             self.mcts = mt.MCTS(    anet = self.ANET,
                                     board_size = board_size, 
-                                    episodes = episodes, 
                                     num_search_games = num_search_games, 
                                     rollout_policy = rollout_policy,
                                     grate = grate)
             
-            # d. Run it while the time remains
-            # TODO also add a check for board being in terminal
-            t_end = time.time() + 2
-            while time.time() < t_end:
-                
-                print("fuck")
-                # Start running mcts with the root (does so by the default). Uses ANET by default. Rollouts are done num_search_games times. 
-                self.mcts.run()
+            
+            # d. Run it while the board is not in terminal state
+            while not self.mcts.board.is_terminal()[0]:
+                                                
+                # Testing grounds - running until time expires instead of num_search_games
+                # t_end = time.time() + 2
+                # time.time() < t_end
 
-                # e. Training ANET 
+                # Start running mcts with the root (does so by the default). Uses ANET by default. Rollouts are done num_search_games times.                 
+                # Run MCTS for num_search_games times
+                for sg in range(num_search_games): 
+                    self.mcts.run()
+
+                # Adding training data for the ANET to learn from 
                 self.RBUF.append( ( self.mcts.root.state , self.mcts.root.get_visits()  ) )
 
-                # Update the root, based on the best action
-                         
-                board = grid.Grid( self.board_size )
-                board.set_from_state(self.mcts.root.state)
-                                        
-                # Make a move depending whose turn it is
-                if board.get_player() == 1:
-                    anode = h.argmax(self.mcts.root.actions, lambda a : a.value)
-                else:
-                    anode = h.argmin(self.mcts.root.actions, lambda a : a.value)
-                
-                board.make_move(anode.action)
-                
-                self.mcts.root = mt.snode( board.get_state() , None)
-                
-                if board.is_terminal()[0]:
-                    break
+                # Use tree policy (full greedy choice with the highest action), move the board to the new state, and make the new successor state the root
+                chosen_an = self.mcts.tree_policy(self.mcts.root, grate = 1)
+                self.mcts.board.make_move(chosen_an.action)
+                self.mcts.root = chosen_an.child
 
+
+            # Now that we are collecting a database of cool ass moves, we need to train our network with a random minibatch from there
             # e. Train ANET from the RBUF            
             for i in range(int(len(self.RBUF) / 5 ) ):
-                # Pick a random training case
+                # Pick a random training case and train the ANET
                 case = random.choice( self.RBUF ) 
-                
                 self.ANET.train( case[0], case[1]  )
                 
                 
             # f. Save the parameters of the NN for the evaluation
             if e % M == 0:
-                self.ANET.save_NN(e)
+                self.ANET.save(e)
                 
             
     # Play using ANET
@@ -114,14 +105,14 @@ class RL():
 start_time = time.time()
 
 rl = RL(
-        board_size = 5, 
-        episodes = 50, 
-        num_search_games = 100, 
-        rollout_policy = "r", 
+        board_size = 3, 
+        episodes = 200, 
+        num_search_games = 400, 
+        rollout_policy = "n", 
         grate = 0.2, 
         M = 50, 
         
-        nn_layers = [ 5, "sigmoid", 5, "sigmoid"], 
+        nn_layers = [ 3, "sigmoid", 3, "sigmoid"], 
         nn_optimizer = "SGD"
 )
 
