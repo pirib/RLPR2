@@ -35,7 +35,7 @@ class ANET():
         self.model = tf.keras.Sequential()
 
         # Adding the input layer
-        self.model.add(tf.keras.layers.InputLayer(input_shape = (layers[0],) ))
+        self.model.add(tf.keras.layers.InputLayer(input_shape = (layers[0]+1, ) ))
 
         # Adding layers with number of nodes as specified in layers argument
         for i in range(len(layers[1:])):
@@ -49,21 +49,26 @@ class ANET():
     
         # Compile the model
         # TODO optimizer is set by default to SGD
-        self.model.compile(optimizer = optimizer, loss = 'mean_squared_error')
+        self.model.compile(optimizer = optimizer, loss = 'mean_absolute_error')
         
         
         
     # Train the network
-    def train(self, state, visit_counts, epochs = 1):
-        
+    def train(self, state, visit_counts, epochs = 3):
+        #print()
+        #print(state)
+        visit_counts = [i/sum(visit_counts) for i in visit_counts ]
+        print(visit_counts)
         # Setting the dimensions of the training data
-        x = np.array(self.state_to_arr( state))
+        x = np.array(self.state_to_arr(state))
         x = np.expand_dims(x,0)
+        #print(x)
         
         # Seeting the dimensions of the ouptut 
         y = np.array(visit_counts)
         y = np.expand_dims(y,0)
-        
+        #print(y)
+        #print( )
         self.model.fit( x, y, epochs, verbose = 0)
     
     
@@ -89,10 +94,13 @@ class ANET():
     
         # Not all the moves in there are possible, need to normalize the output
         # Set all pd values where state is not zero to zero (e.g. where the move is not possible)
-        for oi, si in zip(range( len(pd)), state):
+        for oi, si in zip(range( len(pd)), state[1:]):
             if si != "0":    pd[oi] = 0    
      
         # Now, normalize the pd   
+        if sum(pd) == 0:
+            print(state)
+            print(np.array(self.predict(state))[0])
         pd = [i/sum(pd) for i in pd ]
         return pd
     
@@ -115,3 +123,23 @@ class ANET():
         return [int(i) for i in tuple(board_state)]
     
 
+
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            

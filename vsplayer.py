@@ -24,17 +24,18 @@ play.print_grid()
 # Playing until the board is in terminal state
 while not play.is_terminal()[0]:
 
-    if play.get_player() == 1:
+    if play.get_player() == 2:
         # Play the game, pausing every time it is player's turn to play
         player_input = input("Player turn: ")
         move = (int(player_input[0]), int(player_input[1]))
     else:
         # Get the probability distribution from ANET
-        pd = anet.policy(play.get_state())
+        pd = anet.policy( str(play.get_player()) + play.get_state() )
         # Pick the best move
+        print(pd)
         move = play.get_coor( pd.index(h.argmax( pd ))) 
     
     play.make_move(move)
     play.print_grid()
     
-    
+print("Player " + str(1 if play.get_player() == 2 else 2 ) + " won!" )

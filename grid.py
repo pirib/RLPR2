@@ -21,9 +21,6 @@ import matplotlib.pyplot as plt
 
 class Grid():
 
-    # Private
-    grid = []
-    
     # Potential neighbours set for each node - (row, col)
     offset = ( (-1,-1) , (0,-1) , (-1,0) , ( 0, 1) , ( 1, 0) , (1, 1) )
 
@@ -32,9 +29,11 @@ class Grid():
     # Grid:
     # Size is as defined in hex-board-games.pdf    
     def __init__( self, size):
+        self.grid = []
         self.grid.clear()
         self.create(size)
         self.size = size
+
         
         
         
@@ -225,7 +224,9 @@ class Grid():
         elif state_info[1] == 1:
             return 1
         elif state_info[1] == 2:
-            return -1            
+            return -1        
+        else:
+            print("the fuck")
 
     
     
