@@ -15,7 +15,7 @@ import h
 # Load the ANET
 anet = an.ANET()
 
-anet.load(200)
+anet.load(600)
 
 # Create the board
 play = grid.Grid(3)
