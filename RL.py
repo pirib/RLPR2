@@ -72,8 +72,8 @@ class RL():
                 self.mcts.bb.make_move(chosen_an.action)
                 self.mcts.root = chosen_an.child
 
-            print(self.RBUF)
-            print()
+            #print(self.RBUF)
+            #print()
             # Now that we are collecting a database of cool ass moves, we need to train our network with a random minibatch from there
             # e. Train ANET from the RBUF            
             for i in range(int(len(self.RBUF) * 0.3)):
@@ -111,13 +111,13 @@ start_time = time.time()
 
 rl = RL(
         board_size = 3, 
-        episodes = 201, 
-        num_search_games = 500, 
+        episodes = 1001, 
+        num_search_games = 1000, 
         rollout_policy = "n", 
         grate = 0.9, 
         M = 50, 
         
-        nn_layers = [3, "sigmoid", 3, "sigmoid", 3, "sigmoid"], 
+        nn_layers = [9, "relu", 9, "relu"], 
         nn_optimizer = "SGD"
 )
 

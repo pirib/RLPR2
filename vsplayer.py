@@ -15,7 +15,7 @@ import h
 # Load the ANET
 anet = an.ANET()
 
-anet.load(0)
+anet.load(200)
 
 # Create the board
 play = grid.Grid(3)
@@ -32,7 +32,7 @@ while not play.is_terminal()[0]:
         # Get the probability distribution from ANET
         pd = anet.policy( str(play.get_player()) + play.get_state() )
         # Pick the best move
-        print(pd)
+
         move = play.get_coor( pd.index(h.argmax( pd ))) 
     
     play.make_move(move)

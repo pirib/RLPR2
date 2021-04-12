@@ -8,6 +8,7 @@ Created on Fri Apr  2 13:14:05 2021
 import tensorflow as tf
 import numpy as np
 import random
+import scipy
 
 tf.config.optimizer.set_jit(True)
 
@@ -19,7 +20,7 @@ class ANET():
     # ^ Activating functions accepted - "linear" , "sigmoid" , "tanh", "relu" 
     # optimizer - the optimizer used. 
     # ^ Following are accepted - "Adagrad" , "SGD" , "RMSprop" , "Adam" 
-    def __init__( self,  layers = None, optimizer = "SGD"):
+    def __init__( self,  layers = None, optimizer = "Adam"):
         # The model will be accessible directly
         self.model = None
         # Create the network
@@ -36,6 +37,7 @@ class ANET():
 
         # Adding the input layer
         self.model.add(tf.keras.layers.InputLayer(input_shape = (layers[0]+1, ) ))
+        #self.model.add( tf.keras.layers.Dense( units = layers[0]+1, activation = "sigmoid" ) )
 
         # Adding layers with number of nodes as specified in layers argument
         for i in range(len(layers[1:])):
@@ -48,17 +50,16 @@ class ANET():
         self.model.add(tf.keras.layers.Dense( units = layers[-1], activation='softmax' ) )
     
         # Compile the model
-        # TODO optimizer is set by default to SGD
-        self.model.compile(optimizer = optimizer, loss = 'mean_absolute_error')
+        self.model.compile(optimizer = optimizer, loss = 'categorical_crossentropy')
         
         
         
     # Train the network
-    def train(self, state, visit_counts, epochs = 3):
+    def train(self, state, visit_counts, e = 64):
         #print()
         #print(state)
         visit_counts = [i/sum(visit_counts) for i in visit_counts ]
-        print(visit_counts)
+        #print(visit_counts)
         # Setting the dimensions of the training data
         x = np.array(self.state_to_arr(state))
         x = np.expand_dims(x,0)
@@ -68,8 +69,8 @@ class ANET():
         y = np.array(visit_counts)
         y = np.expand_dims(y,0)
         #print(y)
-        #print( )
-        self.model.fit( x, y, epochs, verbose = 0)
+
+        self.model.fit( x, y, epochs = e, verbose = 0)
     
     
     
@@ -124,17 +125,12 @@ class ANET():
     
 
 
+
             
             
-            
-            
-            
-            
-            
-            
-            
-            
-            
+#scipy.special.softmax
+
+           
             
             
             
