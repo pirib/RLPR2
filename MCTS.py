@@ -119,11 +119,17 @@ class MCTS:
                 # ANET should predict the next move
                 elif policy == "n":
                     
-                    # Ask anet to select the move for the next state
-                    pd = self.anet.policy( str(board.get_player()) + board.get_state())
+                    if random.random() > self.grate:
+                        # Pick a move randomly
+                        move = random.choice(board.get_available_actions())
                     
-                    # Get the index of the highest PD value, then its coordinate
-                    move = board.get_coor( pd.index(h.argmax( pd )) )
+                    else:
+                        # Ask anet to select the move for the next state
+                        pd = self.anet.policy( str(board.get_player()) + board.get_state())
+                        
+                        # Get the index of the highest PD value, then its coordinate
+                        # TODO choose using pd not argmax
+                        move = board.get_coor( pd.index(h.argmax( pd )) )
 
                 else:
                     raise Exception("MCTS does not support policy named " + policy)
@@ -185,7 +191,7 @@ class MCTS:
             return None
   
         # With grate probability explore
-        if random.random() <= self.grate:
+        if random.random() > self.grate:
             # Pick a move randomly
             anode = random.choice(snode.actions)
 
@@ -198,9 +204,9 @@ class MCTS:
             
             # Make a move depending whose turn it is
             if board.get_player() == 1:
-                anode = h.argmax(snode.actions, lambda a : a.value + UCT( a.parent.visits , a.visits )  )
+                anode = h.argmax(snode.actions, (lambda a : a.value + UCT( a.parent.visits , a.visits ))  )
             else:
-                anode = h.argmin(snode.actions, lambda a : a.value + UCT( a.parent.visits , a.visits )  )
+                anode = h.argmin(snode.actions, (lambda a : a.value - UCT( a.parent.visits , a.visits ))  )
             
         return anode
     

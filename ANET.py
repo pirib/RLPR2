@@ -8,6 +8,7 @@ Created on Fri Apr  2 13:14:05 2021
 import tensorflow as tf
 import numpy as np
 import random
+import grid
 import scipy
 
 tf.config.optimizer.set_jit(True)
@@ -55,10 +56,16 @@ class ANET():
         
         
     # Train the network
-    def train(self, state, visit_counts, e = 64):
+    def train(self, state, visit_counts, e = 8):
         #print()
         #print(state)
-        visit_counts = [i/sum(visit_counts) for i in visit_counts ]
+        
+        # Normalize visit_counts
+        #visit_counts = [i/sum(visit_counts) for i in visit_counts ]
+        
+        # Softmax visit counts
+        visit_counts = scipy.special.softmax(visit_counts)
+        
         #print(visit_counts)
         # Setting the dimensions of the training data
         x = np.array(self.state_to_arr(state))
@@ -70,7 +77,7 @@ class ANET():
         y = np.expand_dims(y,0)
         #print(y)
 
-        self.model.fit( x, y, epochs = e, verbose = 0)
+        self.model.fit( x, y, epochs = e, verbose = 0, batch_size = 16)
     
     
     
@@ -100,20 +107,22 @@ class ANET():
      
         # Now, normalize the pd   
         if sum(pd) == 0:
-            print(state)
-            print(np.array(self.predict(state))[0])
-        pd = [i/sum(pd) for i in pd ]
+            # A small chance that 
+            pd = np.array(self.predict(state))[0]
+        else:
+            pd = [i/sum(pd) for i in pd ]
+        
         return pd
     
     
     
     # Saves the NN information to a file
     def save(self, e):
-        self.model.save('./models/m' + str(e))
+        self.model.save('./10pertrain/m' + str(e))
     
     # Load the model
     def load(self, e):
-        self.model = tf.keras.models.load_model('./models/m' + str(e))
+        self.model = tf.keras.models.load_model(e)
         
     
     

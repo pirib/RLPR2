@@ -224,7 +224,7 @@ class Grid():
         elif state_info[1] == 1:
             return 1
         elif state_info[1] == 2:
-            return -1        
+            return -1
         else:
             print("the fuck")
 
@@ -282,7 +282,7 @@ class Grid():
 # Helpers
 
 # A shortcut for quickly creating a board, and setting it to a particular state
-# TODO change the name
+# Returns the board just created
 def create_board(state):
 
     # Make a grid

@@ -44,10 +44,10 @@ class RL():
                                     num_search_games = num_search_games, 
                                     rollout_policy = rollout_policy,
                                     grate = grate)
-            
+
             # Grate drops every episode
-            grate *= 0.9
-            
+            grate *= 0.99
+
             # d. Run it while the board is not in terminal state
             while not self.mcts.bb.is_terminal()[0]:
                 
@@ -58,8 +58,7 @@ class RL():
                     self.mcts.run()
 
                 # Adding training data for the ANET to learn from 
-                new_case = ( str(self.mcts.bb.get_player()) + self.mcts.root.state , self.mcts.root.get_visits() )
-                self.RBUF[new_case[0]] = new_case[1]
+                self.RBUF[str(self.mcts.bb.get_player()) + self.mcts.root.state ] = self.mcts.root.get_visits() 
 
                 #=========================== TESTING GROUNDS
                 #print(self.mcts.root.state)
@@ -72,15 +71,15 @@ class RL():
                 self.mcts.bb.make_move(chosen_an.action)
                 self.mcts.root = chosen_an.child
 
+
             #print(self.RBUF)
             #print()
             # Now that we are collecting a database of cool ass moves, we need to train our network with a random minibatch from there
-            # e. Train ANET from the RBUF            
+            # e. Train ANET from the RBUF                
             for i in range(int(len(self.RBUF) * 0.3)):
                 # Pick a random training case and train the ANET
                 case = random.choice( list(self.RBUF.items()) )
                 self.ANET.train( case[0], case[1] )
-                
                 
             # f. Save the parameters of the NN for the evaluation
             if e % M == 0:
@@ -111,14 +110,14 @@ start_time = time.time()
 
 rl = RL(
         board_size = 3, 
-        episodes = 1001, 
-        num_search_games = 1000, 
+        episodes = 301, 
+        num_search_games = 1000,
         rollout_policy = "n", 
-        grate = 0.9, 
+        grate = 0.99, 
         M = 50, 
         
-        nn_layers = [9, "relu", 9, "relu"], 
-        nn_optimizer = "SGD"
+        nn_layers = [128, "relu"], 
+        nn_optimizer = "Adam"
 )
 
 
