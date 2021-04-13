@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jan 15 14:07:25 2021
+Created on Tue Apr 13 17:05:46 2021
 
 @author: babay
 """
@@ -8,10 +8,6 @@ Created on Fri Jan 15 14:07:25 2021
 # In-house stuff
 import node as N
 
-# For general funciton
-import random
-import time
-from copy import deepcopy
 
 # For printing pretty stuff
 import networkx as nx
@@ -22,7 +18,7 @@ import matplotlib.pyplot as plt
 class Grid():
 
     # Potential neighbours set for each node - (row, col)
-    offset = ( (-1,-1) , (0,-1) , (-1,0) , ( 0, 1) , ( 1, 0) , (1, 1) )
+    offset = ( (-1,0) , (-1,1) , (0,1) , ( 1, 0) , ( 1, -1) , (0, -1) )
 
     # Methods
     
@@ -224,7 +220,7 @@ class Grid():
         elif state_info[1] == 1:
             return 1
         elif state_info[1] == 2:
-            return -1
+            return -1        
         else:
             print("the fuck")
 
@@ -240,6 +236,7 @@ class Grid():
         # The colors and labels used in the drawing
         color_map = []
         labels = {}
+        pos = {}
 
         # Iterate through all the nodes, and add them as.. nodes
         for row in self.grid:
@@ -252,7 +249,8 @@ class Grid():
                 else:
                     color_map.append('white') 
                 
-                labels[n] = [n.row, n.col]
+                pos[n] = [ n.col, -n.row]
+                labels[n] = [n.col, n.row]
                 
         # Iterate through each neighbour of the node, and add the edges in between. Networkx ignores already existing edges, which is nice
         for row in self.grid:
@@ -261,8 +259,8 @@ class Grid():
                     G.add_edge(node, n)
         
         # Draws the nodes 
-    
-        nx.draw(G, labels, labels=labels, node_color=color_map)
+        
+        nx.draw(G, pos, labels=labels, node_color=color_map)
         plt.pause(0.001)
 
 
@@ -282,7 +280,7 @@ class Grid():
 # Helpers
 
 # A shortcut for quickly creating a board, and setting it to a particular state
-# Returns the board just created
+# TODO change the name
 def create_board(state):
 
     # Make a grid
@@ -291,9 +289,8 @@ def create_board(state):
     # Set it to the state that we are currently in
     board.set_from_state(state)
     
+    
     return board
-
-
 
 
 

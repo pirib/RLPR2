@@ -5,26 +5,28 @@ Created on Fri Apr  2 13:14:05 2021
 @author: babay
 """
 
+
+# For general function
 import tensorflow as tf
 import numpy as np
-import random
-import grid
 import scipy
 
+
+# Optimize the tensorflow
 tf.config.optimizer.set_jit(True)
+
 
 class ANET():
     
-
     # Constructor
     # layers - a list with number of nodes in the layers, alternating with activation functions. The first value is the input shape only. 
     # ^ Activating functions accepted - "linear" , "sigmoid" , "tanh", "relu" 
     # optimizer - the optimizer used. 
     # ^ Following are accepted - "Adagrad" , "SGD" , "RMSprop" , "Adam" 
-    def __init__( self,  layers = None, optimizer = "Adam"):
+    def __init__( self,  layers = None, optimizer = "Adam", save_path = "model"):
         # The model will be accessible directly
         self.model = None
-        # Create the network
+        # Create the network, if layers have been specified
         if layers:
             self.create_network(layers, optimizer = optimizer)
     
@@ -107,7 +109,7 @@ class ANET():
      
         # Now, normalize the pd   
         if sum(pd) == 0:
-            # A small chance that 
+            # A small chance that NN sets 0 to a good move
             pd = np.array(self.predict(state))[0]
         else:
             pd = [i/sum(pd) for i in pd ]
@@ -117,12 +119,12 @@ class ANET():
     
     
     # Saves the NN information to a file
-    def save(self, e):
-        self.model.save('./test/m' + str(e))
+    def save(self, e, save_path):
+        self.model.save('./' + save_path  + '/m' + str(e))
     
-    # Load the model
-    def load(self, e):
-        self.model = tf.keras.models.load_model(e)
+    # Loads the model
+    def load(self, e, load_path):
+        self.model = tf.keras.models.load_model('./' + load_path + '/m' + str(e) )
         
     
     
@@ -134,12 +136,6 @@ class ANET():
     
 
 
-
-            
-            
-#scipy.special.softmax
-
-           
             
             
             

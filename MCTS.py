@@ -36,10 +36,15 @@ class MCTS:
         
     # Run the MCTS
     def run(self):
+        # The 4 procedures 
         
+        # 1. Selection
         snode, anode = self.selection() 
+        # 2. Expansion
         esnode = self.expansion(snode, anode)
+        # 3. Simulation
         reward, sel_anode = self.simulation(esnode, self.policy)
+        # 4. Backup
         self.backup(sel_anode, reward)
 
 
@@ -126,14 +131,14 @@ class MCTS:
                     else:
                         # Ask anet to select the move for the next state
                         pd = self.anet.policy( str(board.get_player()) + board.get_state())
-                        
                         # Get the index of the highest PD value, then its coordinate
-                        # TODO choose using pd not argmax
                         move = board.get_coor( pd.index(h.argmax( pd )) )
 
+                # Raise the exception if wrong rollout policy has been chosen
                 else:
                     raise Exception("MCTS does not support policy named " + policy)
 
+                # Make the move selected by the rollout policy
                 board.make_move(move)
                 
             # Return the reward of the terminal state
@@ -178,7 +183,7 @@ class MCTS:
     # The choice the tree makes is based on the VALUES of the actions
     def tree_policy(self, snode, grate):
 
-        
+        # Upper Confidence Bound to encourage exploration
         def UCT(state_visits, action_visits):
             return ( log10(state_visits) / (1 + action_visits) )**0.5 if state_visits != 0 else 0            
 
@@ -197,19 +202,22 @@ class MCTS:
 
         # Else, exploit, based on the values of the action, and the player's turn it currently is
         else:
-            
             # Get the state info
             board = grid.Grid( self.board_size )
             board.set_from_state(snode.state)
             
             # Make a move depending whose turn it is
             if board.get_player() == 1:
+                # Select the action which gives the highest values 
                 anode = h.argmax(snode.actions, (lambda a : a.value + UCT( a.parent.visits , a.visits ))  )
             else:
+                # Select the action which gives the lowest values 
                 anode = h.argmin(snode.actions, (lambda a : a.value - UCT( a.parent.visits , a.visits ))  )
-            
+        
+        # Return the selected action
         return anode
     
+
 
 # Node classes =============================================================================
         
@@ -239,8 +247,10 @@ class snode():
         # Generate actions
         aa = board.get_available_actions()
         
+        # If there are no available actions, this is a terminal node
         if aa == None:
             self.actions = None
+        # Else, add all possible moves as action nodes
         else:
             for a in board.get_available_actions():
                 self.actions.append( anode( a, self ) )
@@ -253,11 +263,13 @@ class snode():
         board = grid.Grid( int(len(self.state)**0.5) )
         board.set_from_state(self.state)
         
+        # Empty list that we are going to fill up
         visits = []
         
         # Get all the nodes
         b_states = board.get_state(False)
 
+        # Match is with legal actions
         for b in b_states:
             found = False
             i = None
@@ -266,11 +278,12 @@ class snode():
                 if b == self.actions[ai].action: 
                     found = True
                     i = ai 
-            if found:
-                visits.append(self.actions[i].visits)
-            else:
-                visits.append(0)
-                            
+            
+            # Set to 0 if the action is not legal
+            if found: visits.append(self.actions[i].visits)
+            else: visits.append(0)
+        
+        # Return the complete list
         return visits
     
     # Addds 1 to the visits
@@ -294,7 +307,7 @@ class anode():
         # The state node this action leads to
         self.child = None
 
-
+    # Updates the value of the action node and its visited counter
     def update_value_visit(self, new_value):
         tv = self.value * self.visits
         self.visits = self.visits + 1

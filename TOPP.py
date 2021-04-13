@@ -6,10 +6,11 @@ Created on Tue Apr 13 11:12:32 2021
 """
 
 # In-house stuff
-
 import ANET as an
 import grid
 import h
+
+
 
 
 # Load the ANET
@@ -18,7 +19,7 @@ class TOPP():
 
     # n - number of participants
     # M - the jump between the trianing episodes the NN took
-    def __init__(self, M, N, G, board_size):
+    def __init__(self, M, N, G, board_size, path):
         
         # [p1 p2] : win/loss ratio
         self.results = {}
@@ -27,13 +28,15 @@ class TOPP():
         # Initialize the anets into a list and load the models
         for i in range(N):
             self.anets.append( an.ANET() )
-            self.anets[i].load("./test/m" + str(i*M))
-            self.play(M, N, G, board_size)
+            self.anets[i].load( str(i*M) , "./" + path )
+       
+        self.play(M, N, G, board_size)
 
 
+    # Play the tournament
     def play(self, M, N, G, board_size):
         for anet1 in self.anets:
-            for anet2 in self.anets:
+            for anet2 in [a for a in self.anets if a != anet1]:
                 for i in range(G):
                     play = grid.Grid(board_size)
     
@@ -49,21 +52,40 @@ class TOPP():
                         
                         # Make the best move
                         play.make_move(play.get_coor( pd.index(h.argmax( pd ))) )
-                    
+
                     # Save the results of the game
-                    key = "p" + str(self.anets.index(anet1)) + " vs p" + str(self.anets.index(anet2)) 
+                    key = "an" + str(self.anets.index(anet1)) + " vs an" + str(self.anets.index(anet2)) 
                     
+                    # Add the results into the dictionary 
                     if play.is_terminal()[1] == 1:
                         if key in self.results: 
-                            self.results[key] = self.results[key] + 1                
+                            self.results[key][0] += 1                
                         else: 
-                            self.results[key] = 1
+                            self.results[key] = [1,0]
+                    else:
+                        if key in self.results: 
+                            self.results[key][1] += 1                
+                        else: 
+                            self.results[key] = [0, 1]
+
+
+
+    # Prints the results of the tounament
+    def print_results(self):
+        
+        print(self.results)
+
         
 
-topp = TOPP(50, 5, 10, 3)
+# Initialize the TOPP
+topp = TOPP( M = 50, 
+             N = 5, 
+             G = 5, 
+             board_size = 3,
+             path = "3x3")
 
-
-print(topp.results)
+# Print the results
+topp.print_results()
 
 
 
