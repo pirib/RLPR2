@@ -14,7 +14,7 @@ import h
 # Load the ANET
 anet = an.ANET()
 
-anet.load('./10pertrain/m' + str(200))
+anet.load('./corrset/m' + str(250))
 
 # Create the board
 play = grid.Grid(3)

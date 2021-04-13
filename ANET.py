@@ -118,7 +118,7 @@ class ANET():
     
     # Saves the NN information to a file
     def save(self, e):
-        self.model.save('./10pertrain/m' + str(e))
+        self.model.save('./test/m' + str(e))
     
     # Load the model
     def load(self, e):
