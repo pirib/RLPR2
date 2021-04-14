@@ -17,9 +17,8 @@ class MCTS:
      
     # Constructor
     # anet - the neural network that should be used for rollout selection
-    # episodes - total number of training episodes to run
     # grate - greed rate in the tree selection policy
-    # num_rollouts - number of rollouts in the simulation search 
+    # num_search_games - number of rollouts in the simulation search 
     def __init__( self, anet, board_size, grate, rollout_policy = "n", num_search_games = 1):
         self.anet = anet
         self.board_size = board_size
@@ -34,8 +33,10 @@ class MCTS:
         # The board this MCTS's root is currently in    
         self.bb = grid.Grid(board_size)
         
+        
     # Run the MCTS
     def run(self):
+        
         # The 4 procedures 
         
         # 1. Selection

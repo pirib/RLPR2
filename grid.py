@@ -30,16 +30,13 @@ class Grid():
         self.create(size)
         self.size = size
 
-        
-        
-        
+
     # Destructor - also removes all the nodes.
     def __del__(self): 
         for row in self.grid:
             for node in row:
                 del node
-        del self
-        
+        del self        
         
         
     # Creates the grid
@@ -105,7 +102,7 @@ class Grid():
 
              
    
-    # Places a piece into the an empty spot as specified by coor tuple 
+    # Places a piece into the an empty spot as specified by coor tuple - (row, col)
     # This function moves the grid into a new state
     def make_move(self, coor):
         
@@ -161,8 +158,6 @@ class Grid():
         
     # Depth-first search from an opposing side to another
     # Returns True if the state is terminal, as well as the player number who won the game. Alternatively returns False, 0
-    # TODO return also the winning route?
-    # TODO this can be optimized, to return once a terminal route has been found
     def is_terminal(self):
 
         def iterate(node,visited,player):
@@ -280,7 +275,6 @@ class Grid():
 # Helpers
 
 # A shortcut for quickly creating a board, and setting it to a particular state
-# TODO change the name
 def create_board(state):
 
     # Make a grid
@@ -288,7 +282,6 @@ def create_board(state):
     
     # Set it to the state that we are currently in
     board.set_from_state(state)
-    
     
     return board
 

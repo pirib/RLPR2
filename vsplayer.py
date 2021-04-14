@@ -13,37 +13,53 @@ import ANET as an
 import grid
 import h
 
-
-# Load the ANET
-anet = an.ANET()
-
-anet.load(50, "3x3")
-
-# Create the board
-play = grid.Grid(3)
-play.print_grid()
-
-# Playing until the board is in terminal state
-while not play.is_terminal()[0]:
-
-    # Change 2 to 1 if you want to go first
-    if play.get_player() == 2:
-
-        # Play the game, pausing every time it is player's turn to play
-        player_input = input("Player turn: ")
-        move = (int(player_input[1]), int(player_input[0]) )
-
-    else:
-
-        # Get the probability distribution from ANET
-        pd = anet.policy( str(play.get_player()) + play.get_state() )
+class play():
+    
+    def __init__(self, board_size, ai_lvl, path, player):
         
-        # Pick the best move
-        move = play.get_coor( pd.index(h.argmax( pd ))) 
-    
-    # Make the move and print the grid
-    play.make_move(move)
-    play.print_grid()
-    
-# Printing the winner
-print("Player " + str(1 if play.get_player() == 2 else 2 ) + " won!" )
+        # Load the ANET
+        anet = an.ANET()
+        
+        anet.load(ai_lvl, path)
+        
+        # Create the board
+        play = grid.Grid(board_size)
+        play.print_grid()
+        
+        # Playing until the board is in terminal state
+        while not play.is_terminal()[0]:
+        
+            # Change 2 to 1 if you want to go first
+            if play.get_player() == player:
+        
+                # Play the game, pausing every time it is player's turn to play
+                player_input = input("Player turn: ")
+                move = (int(player_input[1]), int(player_input[0]) )
+        
+            else:
+        
+                # Get the probability distribution from ANET
+                pd = anet.policy( str(play.get_player()) + play.get_state() )
+                
+                # Pick the best move
+                move = play.get_coor( pd.index(h.argmax( pd ))) 
+            
+            # Make the move and print the grid
+            play.make_move(move)
+            play.print_grid()
+            
+        # Printing the winner
+        print("Player " + str(1 if play.get_player() == 2 else 2 ) + " won!" )
+
+
+# Initialize
+t = play(board_size = 5, 
+         ai_lvl = 300, 
+         path = "5x5crazyy2layers", 
+         player = 1)
+
+
+
+
+
+

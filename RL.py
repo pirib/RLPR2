@@ -42,7 +42,7 @@ class RL():
                                     grate = grate)
 
             # Grate drops every episode
-            grate *= 0.99
+            #grate *= 0.99
 
             # d. Run it while the board is not in terminal state
             while not self.mcts.bb.is_terminal()[0]:
@@ -66,7 +66,7 @@ class RL():
             # e. Train ANET from the RBUF                
             batch_size = int(len(self.RBUF) * 0.3)
             
-            for i in range(batch_size) if batch_size<=32 else range(32):
+            for i in range(batch_size) if batch_size<=16 else range(16):
                 # Pick a random training case and train the ANET
                 case = random.choice( list(self.RBUF.items()) )
                 self.ANET.train( case[0], case[1] )
@@ -82,16 +82,16 @@ start = time.time()
 # Start the training
 rl = RL(
         board_size = 5, 
-        episodes = 501, 
+        episodes = 251, 
         num_search_games = 1000,
         rollout_policy = "n", 
-        grate = 0.99, 
+        grate = 0.3, 
 
         M = 50, 
         
-        nn_layers = [128, "relu"], 
+        nn_layers = [128, "relu", 64, "relu"], 
         nn_optimizer = "Adam",
-        save_path = "5x5"
+        save_path = "5x5new"
 )
 
 

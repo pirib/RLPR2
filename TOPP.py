@@ -12,13 +12,14 @@ import h
 
 
 
-
 # Load the ANET
 
 class TOPP():
 
-    # n - number of participants
+
     # M - the jump between the trianing episodes the NN took
+    # N - number of participants
+    # G - number of games in series
     def __init__(self, M, N, G, board_size, path):
         
         # [p1 p2] : win/loss ratio
@@ -68,12 +69,10 @@ class TOPP():
                         else: 
                             self.results[key] = [0, 1]
 
-
-
     # Prints the results of the tounament
     def print_results(self):
-        
-        print(self.results)
+            for x in self.results.keys():
+                print(f"{x}: {self.results[x]}")
 
         
 

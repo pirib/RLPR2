@@ -17,6 +17,7 @@ def argmax(l, f = lambda e : e, *args):
             b = e
     return b
 
+
 # Same as argmax, but looks for smallest value
 def argmin(l, f = lambda e : e, *args):
     b = l[0]

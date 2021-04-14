@@ -59,11 +59,6 @@ class ANET():
         
     # Train the network
     def train(self, state, visit_counts, e = 8):
-        #print()
-        #print(state)
-        
-        # Normalize visit_counts
-        #visit_counts = [i/sum(visit_counts) for i in visit_counts ]
         
         # Softmax visit counts
         visit_counts = scipy.special.softmax(visit_counts)
@@ -72,14 +67,12 @@ class ANET():
         # Setting the dimensions of the training data
         x = np.array(self.state_to_arr(state))
         x = np.expand_dims(x,0)
-        #print(x)
         
         # Seeting the dimensions of the ouptut 
         y = np.array(visit_counts)
         y = np.expand_dims(y,0)
-        #print(y)
 
-        self.model.fit( x, y, epochs = e, verbose = 0, batch_size = 16)
+        self.model.fit( x, y, epochs = e, verbose = 0)
     
     
     
@@ -103,7 +96,7 @@ class ANET():
         pd = np.array(self.predict(state))[0]
     
         # Not all the moves in there are possible, need to normalize the output
-        # Set all pd values where state is not zero to zero (e.g. where the move is not possible)
+        # Set all illegal moves in pd to zero
         for oi, si in zip(range( len(pd)), state[1:]):
             if si != "0":    pd[oi] = 0    
      
