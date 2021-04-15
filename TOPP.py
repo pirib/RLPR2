@@ -10,6 +10,7 @@ import ANET as an
 import grid
 import h
 
+import random
 
 
 # Load the ANET
@@ -53,6 +54,7 @@ class TOPP():
                         
                         # Make the best move
                         play.make_move(play.get_coor( pd.index(h.argmax( pd ))) )
+                        
 
                     # Save the results of the game
                     key = "an" + str(self.anets.index(anet1)) + " vs an" + str(self.anets.index(anet2)) 
@@ -80,8 +82,8 @@ class TOPP():
 topp = TOPP( M = 50, 
              N = 5, 
              G = 5, 
-             board_size = 3,
-             path = "3x3")
+             board_size = 4,
+             path = "4x4constgrate")
 
 # Print the results
 topp.print_results()

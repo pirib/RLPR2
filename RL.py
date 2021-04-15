@@ -42,7 +42,7 @@ class RL():
                                     grate = grate)
 
             # Grate drops every episode
-            grate *= 0.99
+            # grate *= 0.99
             c *= 0.99
 
             # d. Run it while the board is not in terminal state
@@ -83,17 +83,17 @@ start = time.time()
 rl = RL(
         board_size = 4, 
         episodes = 251, 
-        num_search_games = 1000,
+        num_search_games = 500,
         rollout_policy = "n", 
         
-        grate = 0.99, 
+        grate = 0.2, 
         c = 0.9,
 
         M = 50, 
         
-        nn_layers = [128, "relu", 128 , "relu"], 
+        nn_layers = [128, "relu"], 
         nn_optimizer = "Adam",
-        save_path = "4x4"
+        save_path = "4x4constgrate"
 )
 
 

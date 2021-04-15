@@ -13,6 +13,8 @@ import ANET as an
 import grid
 import h
 
+import random
+
 class play():
     
     def __init__(self, board_size, ai_lvl, path, player):
@@ -42,7 +44,8 @@ class play():
                 pd = anet.policy( str(play.get_player()) + play.get_state() )
                 
                 # Pick the best move
-                move = play.get_coor( pd.index(h.argmax( pd ))) 
+                move = play.get_coor( pd.index( h.argmax( pd ))) 
+
             
             # Make the move and print the grid
             play.make_move(move)
@@ -53,10 +56,10 @@ class play():
 
 
 # Initialize
-t = play(board_size = 5, 
-         ai_lvl = 300, 
-         path = "5x5crazyy2layers", 
-         player = 1)
+t = play(board_size = 4, 
+         ai_lvl = 250, 
+         path = "4x4constgrate", 
+         player = 2)
 
 
 
