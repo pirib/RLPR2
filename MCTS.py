@@ -19,12 +19,12 @@ class MCTS:
     # anet - the neural network that should be used for rollout selection
     # grate - greed rate in the tree selection policy
     # num_search_games - number of rollouts in the simulation search 
-    def __init__( self, anet, board_size, grate, rollout_policy = "n", num_search_games = 1):
+    def __init__( self, anet, board_size, grate, c, rollout_policy = "n"):
         self.anet = anet
         self.board_size = board_size
-        self.num_search_games = num_search_games
         self.policy = rollout_policy
         self.grate = grate
+        self.c = c
 
         # Set the root node 
         # The root of the MCTS - constructor initiliazes the parent to None, while state is a string with all 0 for board_size**2
@@ -210,10 +210,10 @@ class MCTS:
             # Make a move depending whose turn it is
             if board.get_player() == 1:
                 # Select the action which gives the highest values 
-                anode = h.argmax(snode.actions, (lambda a : a.value + UCT( a.parent.visits , a.visits ))  )
+                anode = h.argmax(snode.actions, (lambda a : a.value + self.c * UCT( a.parent.visits , a.visits ))  )
             else:
                 # Select the action which gives the lowest values 
-                anode = h.argmin(snode.actions, (lambda a : a.value - UCT( a.parent.visits , a.visits ))  )
+                anode = h.argmin(snode.actions, (lambda a : a.value - self.c * UCT( a.parent.visits , a.visits ))  )
         
         # Return the selected action
         return anode

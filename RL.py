@@ -18,7 +18,7 @@ import time
 class RL():
 
     # Constructor
-    def __init__(self, board_size, episodes, num_search_games, rollout_policy, grate, M, nn_layers, nn_optimizer, save_path):
+    def __init__(self, board_size, episodes, num_search_games, rollout_policy, grate, c, M, nn_layers, nn_optimizer, save_path):
         
         self.board_size = board_size        
         
@@ -37,17 +37,17 @@ class RL():
             # a. b. c. Initialize the MCTS
             self.mcts = mt.MCTS(    anet = self.ANET,
                                     board_size = board_size, 
-                                    num_search_games = num_search_games, 
                                     rollout_policy = rollout_policy,
+                                    c = c,
                                     grate = grate)
 
             # Grate drops every episode
-            #grate *= 0.99
+            grate *= 0.99
+            c *= 0.99
 
             # d. Run it while the board is not in terminal state
             while not self.mcts.bb.is_terminal()[0]:
                 
-    
                 # Start running mcts with the root (does so by the default). Uses ANET by default. Rollouts are done num_search_games times.                 
                 # Run MCTS for num_search_games times
                 for sg in range(num_search_games): 
@@ -81,17 +81,19 @@ start = time.time()
 
 # Start the training
 rl = RL(
-        board_size = 5, 
+        board_size = 4, 
         episodes = 251, 
         num_search_games = 1000,
         rollout_policy = "n", 
-        grate = 0.3, 
+        
+        grate = 0.99, 
+        c = 0.9,
 
         M = 50, 
         
-        nn_layers = [128, "relu", 64, "relu"], 
+        nn_layers = [128, "relu", 128 , "relu"], 
         nn_optimizer = "Adam",
-        save_path = "5x5new"
+        save_path = "4x4"
 )
 
 
