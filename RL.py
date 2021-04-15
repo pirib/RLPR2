@@ -18,7 +18,7 @@ import time
 class RL():
 
     # Constructor
-    def __init__(self, board_size, episodes, num_search_games, rollout_policy, grate, c, M, nn_layers, nn_optimizer, save_path):
+    def __init__(self, board_size, episodes, num_search_games, rollout_policy, grate, grate_const, c, c_const, minibatch_size, M, nn_layers, nn_optimizer, save_path):
         
         self.board_size = board_size        
         
@@ -42,8 +42,12 @@ class RL():
                                     grate = grate)
 
             # Grate drops every episode
-            # grate *= 0.99
-            c *= 0.99
+            if not grate_const:
+                grate *= 0.99
+            
+            # C for UCT drops every episode
+            if not c_const:
+                c *= 0.99
 
             # d. Run it while the board is not in terminal state
             while not self.mcts.bb.is_terminal()[0]:
@@ -64,9 +68,7 @@ class RL():
 
             # Now that we are collecting a database of cool ass moves, we need to train our network with a random minibatch from there
             # e. Train ANET from the RBUF                
-            batch_size = int(len(self.RBUF) * 0.3)
-            
-            for i in range(batch_size) if batch_size<=16 else range(16):
+            for i in range(minibatch_size):
                 # Pick a random training case and train the ANET
                 case = random.choice( list(self.RBUF.items()) )
                 self.ANET.train( case[0], case[1] )
@@ -87,7 +89,12 @@ rl = RL(
         rollout_policy = "n", 
         
         grate = 0.2, 
+        grate_const = True,
+        
         c = 0.9,
+        c_const = False,
+        
+        minibatch_size = 16,
 
         M = 50, 
         
