@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Apr  1 15:20:21 2021
-
-@author: babay
-"""
-
 # In-house stuff
 import grid
 import h
@@ -313,18 +306,3 @@ class anode():
         tv = self.value * self.visits
         self.visits = self.visits + 1
         self.value = (tv + new_value) / self.visits 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    

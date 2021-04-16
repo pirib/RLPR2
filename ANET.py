@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Apr  2 13:14:05 2021
-
-@author: babay
-"""
-
-
 # For general function
 import tensorflow as tf
 import numpy as np
@@ -126,14 +118,3 @@ class ANET():
     # Takes in the board_state and turns it into the array of ints
     def state_to_arr(self, board_state):
         return [int(i) for i in tuple(board_state)]
-    
-
-
-            
-            
-            
-            
-            
-            
-            
-            
