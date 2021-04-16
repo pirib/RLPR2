@@ -83,24 +83,25 @@ start = time.time()
 
 # Start the training
 rl = RL(
-        board_size = 4, 
-        episodes = 251, 
-        num_search_games = 500,
+        board_size = 6, 
+        episodes = 500, 
+        num_search_games = 1000,
         rollout_policy = "n", 
         
         grate = 0.2, 
         grate_const = True,
         
-        c = 0.9,
+        c = 2,
         c_const = False,
         
-        minibatch_size = 16,
+        minibatch_size = 32,
 
         M = 50, 
         
-        nn_layers = [128, "relu"], 
+        nn_layers = [128, "relu", 128, "relu"], 
         nn_optimizer = "Adam",
-        save_path = "4x4constgrate"
+        save_path = "6x6BigC2layers"
+        
 )
 
 

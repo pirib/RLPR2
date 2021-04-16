@@ -6,6 +6,10 @@ import math
 from BasicClientActorAbs import BasicClientActorAbs
 
 class BasicClientActor(BasicClientActorAbs):
+    
+    # Get the ANET
+    anet = an.ANET()
+    anet.load(350, "6x6BigC2layers")
 
     def __init__(self, IP_address=None, verbose=True):
         self.series_id = -1
@@ -23,15 +27,12 @@ class BasicClientActor(BasicClientActorAbs):
         """
         
         
-        anet = an.ANET()
-        anet.load(250, "6x6")
-        print(state)
         # Get the probability distribution from ANET
-        pd = anet.policy( "".join( str(i) for i in state) )
+        pd = self.anet.policy( "".join( str(i) for i in state) )
         
         # Pick the best move
         index = pd.index(h.argmax( pd ))
-        next_move = (int(index/5), index%5 )
+        next_move = (int(index/6), index%6 )
 
 
         #############################

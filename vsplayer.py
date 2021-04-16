@@ -56,9 +56,9 @@ class play():
 
 
 # Initialize
-t = play(board_size = 4, 
-         ai_lvl = 250, 
-         path = "4x4constgrate", 
+t = play(board_size = 6, 
+         ai_lvl = 210, 
+         path = "6x6", 
          player = 2)
 
 
