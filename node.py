@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Jan 15 11:17:09 2021
-
-@author: babay
-"""
 
 class Node:
     

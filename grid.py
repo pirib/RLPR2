@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Apr 13 17:05:46 2021
-
-@author: babay
-"""
 
 # In-house stuff
 import node as N
@@ -168,7 +163,6 @@ class Grid():
                     visited.append(n)
 
                     # Return True if reached the other border
-                    
                     if player == 1:
                         for nb in [self.grid[x][y] for x,y in [ (self.size-1, i) for i in range(self.size) ] ]:   
                             if nb == n:                                

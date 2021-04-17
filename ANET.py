@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Apr  2 13:14:05 2021
-
-@author: babay
-"""
 
 
 # For general function

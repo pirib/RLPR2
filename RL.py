@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Apr  3 14:02:13 2021
-
-@author: babay
-"""
 
 # In-house stuff
 import MCTS as mt
@@ -25,7 +20,7 @@ class RL():
         # 2. Replay Buffer will store the potential training cases for the ANET
         self.RBUF = {}
         
-        # 3. Initialize the Neural Network (adding the input layer which is the square of the )
+        # 3. Initialize the Neural Network (adding the input layer which is the square of the board size )
         self.ANET = an.ANET( [board_size**2] + nn_layers + [board_size**2] , nn_optimizer, save_path)
         
         # 4. Start working through episodes/epochs
@@ -83,12 +78,12 @@ start = time.time()
 
 # Start the training
 rl = RL(
-        board_size = 4, 
-        episodes = 251, 
-        num_search_games = 500,
+        board_size = 6, 
+        episodes = 500, # 250 
+        num_search_games = 750,
         rollout_policy = "n", 
         
-        grate = 0.2, 
+        grate = 0.3, 
         grate_const = True,
         
         c = 0.9,
@@ -96,11 +91,11 @@ rl = RL(
         
         minibatch_size = 16,
 
-        M = 50, 
+        M = 1, # 50 
         
-        nn_layers = [128, "relu"], 
-        nn_optimizer = "Adam",
-        save_path = "4x4constgrate"
+        nn_layers = [100, "relu", 200, "relu", 100, "relu", 25, "relu"], 
+        nn_optimizer = "RMSprop",
+        save_path = "6x6A"
 )
 
 

@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sun Apr  4 10:24:57 2021
-
-@author: babay
-"""
 
 
 # Argmax - Øyvind look what you turned me into

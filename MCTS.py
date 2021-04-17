@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Apr  1 15:20:21 2021
-
-@author: babay
-"""
 
 # In-house stuff
 import grid
@@ -184,7 +179,7 @@ class MCTS:
     # The choice the tree makes is based on the VALUES of the actions
     def tree_policy(self, snode, grate):
 
-        # Upper Confidence Bound to encourage exploration
+        # Upper Confidence Bound to encourage exploration, which is used later.
         def UCT(state_visits, action_visits):
             return ( log10(state_visits) / (1 + action_visits) )**0.5 if state_visits != 0 else 0            
 

@@ -81,9 +81,9 @@ class TOPP():
 # Initialize the TOPP
 topp = TOPP( M = 50, 
              N = 5, 
-             G = 5, 
+             G = 50, 
              board_size = 4,
-             path = "4x4constgrate")
+             path = "3x3")
 
 # Print the results
 topp.print_results()
