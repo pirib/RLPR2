@@ -88,10 +88,10 @@ rl = RL(
         num_search_games = 1000,
         rollout_policy = "n", 
         
-        grate = 0.2, 
+        grate = 0, 
         grate_const = True,
         
-        c = 2,
+        c = 3,
         c_const = False,
         
         minibatch_size = 32,
@@ -100,7 +100,7 @@ rl = RL(
         
         nn_layers = [128, "relu", 128, "relu"], 
         nn_optimizer = "Adam",
-        save_path = "6x6BigC2layers"
+        save_path = "6x6Latest"
         
 )
 

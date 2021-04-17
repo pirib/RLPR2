@@ -57,8 +57,8 @@ class play():
 
 # Initialize
 t = play(board_size = 6, 
-         ai_lvl = 210, 
-         path = "6x6", 
+         ai_lvl = 350, 
+         path = "6x6BigC2layers", 
          player = 2)
 
 
