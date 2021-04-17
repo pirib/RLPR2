@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Apr  4 10:24:57 2021
-
-@author: babay
-"""
-
-
 # Argmax - Øyvind look what you turned me into
 # l - list to iterate over
 # f - function to apply to those iterables. If not supplied argmax essentially becomes a max function

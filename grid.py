@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr 13 17:05:46 2021
-
-@author: babay
-"""
-
 # In-house stuff
 import node as N
 
@@ -222,7 +215,6 @@ class Grid():
     
     
     # Prints out a pretty looking 
-    # TODO show the winning route ?
     def print_grid(self):
         
         # The new graph for printing
@@ -284,10 +276,3 @@ def create_board(state):
     board.set_from_state(state)
     
     return board
-
-
-
-
-
-
-

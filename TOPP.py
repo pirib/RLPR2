@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr 13 11:12:32 2021
-
-@author: babay
-"""
-
 # In-house stuff
 import ANET as an
 import grid
@@ -87,6 +80,3 @@ topp = TOPP( M = 50,
 
 # Print the results
 topp.print_results()
-
-
-
