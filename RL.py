@@ -23,6 +23,7 @@ class RL():
         # 3. Initialize the Neural Network (adding the input layer which is the square of the board size )
         self.ANET = an.ANET( [board_size**2] + nn_layers + [board_size**2] , nn_optimizer, save_path)
         
+        
         # 4. Start working through episodes/epochs
         for e in range(episodes):
             
