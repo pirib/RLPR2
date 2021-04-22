@@ -28,7 +28,7 @@ class RL():
         for e in range(episodes):
             
             # Just so we are aware of the training process
-            print("episode " + str(e))
+            print("Episode " + str(e))
             
             # a. b. c. Initialize the MCTS
             self.mcts = mt.MCTS(    anet = self.ANET,
@@ -38,13 +38,14 @@ class RL():
                                     grate = grate)
 
             # Grate drops every episode
-            if not grate_const:
+            if not grate_const and not grate < 0.15:
                 grate *= 0.99
             
             # C for UCT drops every episode
-            if not c_const:
+            if not c_const and not c < 0.15:
                 c *= 0.99
 
+            print("\tPlaying...")
             # d. Run it while the board is not in terminal state
             while not self.mcts.bb.is_terminal()[0]:
                 
@@ -63,7 +64,8 @@ class RL():
 
 
             # Now that we are collecting a database of cool ass moves, we need to train our network with a random minibatch from there
-            # e. Train ANET from the RBUF                
+            # e. Train ANET from the RBUF       
+            print("\tTraining...")         
             for i in range(minibatch_size):
                 # Pick a random training case and train the ANET
                 case = random.choice( list(self.RBUF.items()) )
@@ -71,6 +73,7 @@ class RL():
                 
             # f. Save the parameters of the NN for the evaluation
             if e % M == 0:
+                print("\tSaving...")
                 self.ANET.save(e, save_path)
                 
                     
@@ -80,23 +83,23 @@ start = time.time()
 # Start the training
 rl = RL(
         board_size = 6, 
-        episodes = 500, # 250 
-        num_search_games = 750,
+        episodes = 5000, # 250 
+        num_search_games = 1000,
         rollout_policy = "n", 
         
-        grate = 0.3, 
-        grate_const = True,
+        grate = 1, 
+        grate_const = False,
         
-        c = 0.9,
+        c = 1,
         c_const = False,
         
-        minibatch_size = 16,
+        minibatch_size = 32,
 
-        M = 1, # 50 
+        M = 50, # 50 
         
-        nn_layers = [100, "relu", 200, "relu", 100, "relu", 25, "relu"], 
-        nn_optimizer = "RMSprop",
-        save_path = "6x6A"
+        nn_layers = [64, "relu", 128, "relu", 256, "relu", 128, "relu", 64, "relu"], 
+        nn_optimizer = "Adam",
+        save_path = "D6x6Poggers"
 )
 
 
