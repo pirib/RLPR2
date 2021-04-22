@@ -21,14 +21,15 @@ class RL():
         self.RBUF = {}
         
         # 3. Initialize the Neural Network (adding the input layer which is the square of the board size )
-        self.ANET = an.ANET( [board_size**2] + nn_layers + [board_size**2] , nn_optimizer, save_path)
-        
+        # self.ANET = an.ANET( [board_size**2] + nn_layers + [board_size**2] , nn_optimizer, save_path)
+        self.ANET = an.ANET()
+        self.ANET.load(400, "6x6ABABTU")
         
         # 4. Start working through episodes/epochs
         for e in range(episodes):
             
             # Just so we are aware of the training process
-            print("episode " + str(e))
+            print("episode " + str(e+400))
             
             # a. b. c. Initialize the MCTS
             self.mcts = mt.MCTS(    anet = self.ANET,
@@ -38,11 +39,11 @@ class RL():
                                     grate = grate)
 
             # Grate drops every episode
-            if not grate_const:
+            if not grate_const and not grate < 0.15:
                 grate *= 0.99
             
             # C for UCT drops every episode
-            if not c_const:
+            if not c_const and not c < 0.15:
                 c *= 0.99
 
             # d. Run it while the board is not in terminal state
@@ -71,7 +72,7 @@ class RL():
                 
             # f. Save the parameters of the NN for the evaluation
             if e % M == 0:
-                self.ANET.save(e, save_path)
+                self.ANET.save(e+400, save_path)
                 
                     
 # Want to record how much it is going to take        
@@ -80,23 +81,23 @@ start = time.time()
 # Start the training
 rl = RL(
         board_size = 6, 
-        episodes = 500, # 250 
+        episodes = 1600, # 250 
         num_search_games = 750,
         rollout_policy = "n", 
         
-        grate = 0.3, 
-        grate_const = True,
+        grate = 0.1496, 
+        grate_const = False,
         
-        c = 0.9,
+        c = 0.1496,
         c_const = False,
         
-        minibatch_size = 16,
+        minibatch_size = 64,
 
-        M = 1, # 50 
+        M = 50, # 50 
         
-        nn_layers = [100, "relu", 200, "relu", 100, "relu", 25, "relu"], 
-        nn_optimizer = "RMSprop",
-        save_path = "6x6A"
+        nn_layers = [128, "relu", 256, "relu", 128, "relu"], 
+        nn_optimizer = "Adam",
+        save_path = "6x6ABABTU"
 )
 
 
