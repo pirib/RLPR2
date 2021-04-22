@@ -9,7 +9,7 @@ class BasicClientActor(BasicClientActorAbs):
     
     # Get the ANET
     anet = an.ANET()
-    anet.load(450, "D6x6cc3l500")
+    anet.load(500, "6x6P")
 
     def __init__(self, IP_address=None, verbose=True):
         self.series_id = -1
